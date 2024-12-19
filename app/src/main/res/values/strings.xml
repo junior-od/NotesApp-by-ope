@@ -4,4 +4,9 @@
     <string name="king_app">king App</string>
     <string name="create_account">Create Account</string>
     <string name="log_in">Log In</string>
+    <string name="navigation_back_icon">navigation back icon</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 </resources>

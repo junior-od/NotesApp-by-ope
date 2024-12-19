@@ -329,7 +329,7 @@ fun AuthSection(
     showBackground = true, showSystemUi = true, apiLevel = 31,
 )
 @Composable
-fun OnboardingScreenPreview() {
+private fun OnboardingScreenPreview() {
     NotesAppTheme {
         OnboardingScreen()
     }

@@ -32,6 +32,7 @@ fun NotesButton(
         modifier = modifier,
         onClick = onClick,
         enabled = isEnabled,
+        shape = MaterialTheme.shapes.small,
         colors = ButtonColors(
             containerColor = backgroundColor,
             contentColor = contentColor,
@@ -60,7 +61,7 @@ fun NotesButton(
     showSystemUi = true, showBackground = true, apiLevel = 29,
 )
 @Composable
-fun NotesButtonPreview(){
+private fun NotesButtonPreview(){
     NotesAppTheme {
         NotesButton()
     }
