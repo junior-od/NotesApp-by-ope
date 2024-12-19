@@ -19,7 +19,6 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.notesapp.ui.auth.signin.SignInScreen
 import com.example.notesapp.ui.theme.NotesAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,7 +51,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             NotesAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SignInScreen(
+                    Greeting(
+                        name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

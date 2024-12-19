@@ -1,4 +1,4 @@
-package com.example.notesapp.ui.auth.signin
+package com.example.notesapp.ui.auth.signup
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -39,15 +38,15 @@ import com.example.notesapp.ui.theme.NotesAppTheme
 import com.example.notesapp.ui.theme.inputFormHeight
 
 /**
- * composable components for the signin screen
+ * composable components for the signup screen
  * */
 
 @Composable
-fun SignInScreen(
+fun SignUpScreen(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
-    onSignInClicked: (email: String, password: String) -> Unit = { _, _ -> },
-    onGoogleSignInClicked: () -> Unit = {}
+    onSignUpClicked: (email: String, password: String, firstName: String, lastName: String) -> Unit = { _, _,_,_ -> },
+    onGoogleSignUpClicked: () -> Unit = {}
 ){
 
     Column(
@@ -61,30 +60,30 @@ fun SignInScreen(
 
         // top section
         TopNavBarWithScreenTitle(
-            screenTitle = stringResource(id = R.string.log_in),
+            screenTitle = stringResource(R.string.sign_up),
             onBackClicked = onBackClicked
         )
 
         // form section
-        SignInForm(
+        SignUpForm(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxHeight(0.7f)
         )
 
         // bottom section
-        LoginButtonSection(
+        SignUpButtonSection(
             modifier = modifier.fillMaxSize(),
-            onSignInClicked = onSignInClicked
+            onSignUpClicked = onSignUpClicked
         )
     }
 }
 
 /**
- * sign in form
+ * sign up form
  * */
 @Composable
-fun SignInForm(
+fun SignUpForm(
     modifier: Modifier = Modifier,
 ){
 
@@ -93,6 +92,17 @@ fun SignInForm(
             state = rememberScrollState()
         )
     ) {
+
+        // todo move this to viewmodel
+        var firstName by remember {
+            mutableStateOf("")
+        }
+
+        // todo move this to viewmodel
+        var lastName by remember {
+            mutableStateOf("")
+        }
+
 
         // todo move this to viewmodel
         var email by remember {
@@ -109,7 +119,51 @@ fun SignInForm(
             mutableStateOf(false)
         }
 
+        // todo move this to viewmodel
+        var confirmPassword by remember {
+            mutableStateOf("")
+        }
+
+        // todo move this to viewmodel
+        var confirmPasswordVisible by remember {
+            mutableStateOf(false)
+        }
+
         Spacer(modifier = Modifier.height(30.dp))
+
+        EditInputField(
+            modifier = Modifier
+                .height(inputFormHeight)
+                .fillMaxWidth(),
+            text = firstName,
+            onValueChange = {
+                firstName = it
+            },
+            placeholder = stringResource(R.string.first_name),
+            keyboardOptions = KeyboardOptions
+                .Default.copy(
+                    imeAction = ImeAction.Next
+                )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EditInputField(
+            modifier = Modifier
+                .height(inputFormHeight)
+                .fillMaxWidth(),
+            text = lastName,
+            onValueChange = {
+                lastName = it
+            },
+            placeholder = stringResource(R.string.last_name),
+            keyboardOptions = KeyboardOptions
+                .Default.copy(
+                    imeAction = ImeAction.Next
+                )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         EditInputField(
             modifier = Modifier
@@ -123,7 +177,7 @@ fun SignInForm(
             keyboardOptions = KeyboardOptions
                 .Default.copy(
                     imeAction = ImeAction.Next
-            )
+                )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -131,8 +185,7 @@ fun SignInForm(
         EditInputFieldPassword(
             modifier = Modifier
                 .height(inputFormHeight)
-                .fillMaxWidth()
-                .paddingFromBaseline(top = 8.dp, bottom = 8.dp),
+                .fillMaxWidth(),
             text = password,
             onValueChange = {
                 password = it
@@ -140,14 +193,36 @@ fun SignInForm(
             placeholder = stringResource(R.string.password),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Next
             ),
             isPasswordVisible = passwordVisible,
             trailingIconClicked = {
                 passwordVisible = !passwordVisible
             },
 
-        )
+            )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        EditInputFieldPassword(
+            modifier = Modifier
+                .height(inputFormHeight)
+                .fillMaxWidth(),
+            text = confirmPassword,
+            onValueChange = {
+                confirmPassword = it
+            },
+            placeholder = stringResource(R.string.confirm_password),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            isPasswordVisible = confirmPasswordVisible,
+            trailingIconClicked = {
+                confirmPasswordVisible = !confirmPasswordVisible
+            },
+
+            )
 
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -155,22 +230,23 @@ fun SignInForm(
 }
 
 /**
- * login button section
+ * sign up button section
  * */
 @Composable
-fun LoginButtonSection(
+fun SignUpButtonSection(
     modifier: Modifier = Modifier,
-    onSignInClicked: (email: String, password: String) -> Unit = { _, _ -> },
-) {
+    onSignUpClicked: (email: String, password: String, firstName: String, lastName: String) -> Unit = { _, _,_,_ -> },
+    ) {
     Box(modifier = modifier) {
-        val buttonWidthModifier = Modifier.fillMaxWidth(1f)
+        val buttonWidthModifier = Modifier
+            .fillMaxWidth(1f)
             .padding(horizontal = 16.dp)
         NotesButton(
             modifier = buttonWidthModifier.align(Alignment.BottomStart),
             onClick = {
-                onSignInClicked("","")
+                onSignUpClicked("","","","")
             },
-            buttonText = stringResource(R.string.log_in)
+            buttonText = stringResource(R.string.sign_up)
         )
         Spacer(modifier = Modifier.height(8.dp))
     }
@@ -187,8 +263,8 @@ fun LoginButtonSection(
     showSystemUi = true, showBackground = true, apiLevel = 29,
 )
 @Composable
-private fun SignInScreenPreview(){
+private fun SignUpScreenPreview(){
     NotesAppTheme {
-        SignInScreen()
+        SignUpScreen()
     }
 }
