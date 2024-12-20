@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -167,6 +168,88 @@ fun EditInputFieldPassword(
 }
 
 
+/**
+ * EditInputFieldWitTrailingIcon
+ *
+ * @param text: expects data to be displayed in the input box
+ * @param onValueChange: observes changes in the input field
+ *                       and return current data in the input field
+ *  @param placeholder: expects placeholder of input field
+ *  @param placeholderColor: expects placeholderColor of the input field
+ *  @param singleLine: expects boolean if you want input on a single line or not
+ *  @param focusedContainerColor: expects container color of the input field when in focus mode
+ *  @param unFocusedContainerColor: expects container color of the input field when out of focus mode
+ *  @param unfocusedIndicatorColor: expects border color of the input field field when out of focus mode
+ *  @param focusedIndicatorColor: expects border color of the input field field when in of focus mode
+ *  @param keyboardOptions: expects keyboard specific configuration to be used for the input field
+ *  @param trailingIcon: expects icon drawable at the end of the input field
+ *  @param trailingIconClicked: triggers function when trailing icon is clicked
+ *  @param showTrailingIcon: expects boolean if you want show trailing icon or not
+ * */
+@Composable
+fun EditInputFieldWitTrailingIcon(
+    modifier: Modifier = Modifier,
+    text: String = "",
+    onValueChange: (text: String) -> Unit = {_ -> },
+    placeholder: String = "",
+    placeholderColor: Color = MaterialTheme.colorScheme.outline,
+    singleLine: Boolean = true,
+    focusedContainerColor: Color = MaterialTheme.colorScheme.onPrimary,
+    unFocusedContainerColor: Color = MaterialTheme.colorScheme.onPrimary,
+    unfocusedIndicatorColor: Color = MaterialTheme.colorScheme.onPrimary,
+    focusedIndicatorColor: Color = MaterialTheme.colorScheme.onPrimary,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    trailingIconClicked: () -> Unit = {},
+    trailingIcon: Painter,
+    showTrailingIcon: Boolean = true,
+) {
+    Surface(
+        modifier = modifier,
+        tonalElevation = 10.dp,
+        shadowElevation = 20.dp
+    ) {
+        TextField(
+            value = text,
+            onValueChange = onValueChange,
+            singleLine = singleLine,
+            textStyle = MaterialTheme.typography.bodyMedium,
+            label = {
+                Text(
+                    text = placeholder,
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = placeholderColor
+                    )
+                )
+            },
+            colors = TextFieldDefaults.colors().copy(
+                focusedContainerColor = focusedContainerColor,
+                unfocusedContainerColor =  unFocusedContainerColor,
+                unfocusedIndicatorColor = unfocusedIndicatorColor
+            ),
+            shape = MaterialTheme.shapes.small,
+            keyboardOptions = keyboardOptions,
+            trailingIcon = {
+                if(showTrailingIcon) {
+                    IconButton(
+                        modifier = Modifier.size(20.dp),
+                        onClick = trailingIconClicked
+                    ) {
+                        Icon(
+                            painter = trailingIcon,
+                            contentDescription = stringResource(
+                                R.string.icon,
+                                placeholder
+                            )
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+}
+
+
 
 @Preview(
     name = "Light Mode",
@@ -226,6 +309,38 @@ private fun EditInputFieldPasswordPreview(){
             trailingIconClicked = {
                 inputVisble = !inputVisble
             }
+        )
+    }
+}
+
+@Preview(
+    name = "Light Mode",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showSystemUi = true, showBackground = true, apiLevel = 29
+)
+@Preview(
+    name = "Dark Mode",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showSystemUi = true, showBackground = true, apiLevel = 29,
+)
+@Composable
+private fun EditInputFieldWitTrailingIconPreview(){
+    NotesAppTheme {
+        var inputSome by remember {
+            mutableStateOf("jk")
+        }
+      
+        EditInputFieldWitTrailingIcon(
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = if (inputSome.isEmpty()) { "Search for note ..." } else "",
+            text = inputSome,
+            onValueChange = {
+                inputSome = it
+            },
+            trailingIconClicked = {
+                inputSome = ""
+            },
+            trailingIcon = painterResource(id = R.drawable.ic_close)
         )
     }
 }

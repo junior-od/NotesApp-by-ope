@@ -1,6 +1,7 @@
 package com.example.notesapp.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -9,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -67,6 +69,48 @@ fun TopNavBarWithScreenTitle(
                 }
             }
         }
+    )
+}
+
+/**
+ * HomeTop NavBar WithScreenTitledIcon
+ *
+ * @param screenTitle expects composable title of the screen
+ * @param showBackIcon expects boolean if you want the nav icon or not
+ * @param onBackIcon expects Image vector of nav icon
+ * @param onBackClicked call back function when nav icon is clicked on
+ * @param actions the actions displayed at the end of the top app bar.
+ * */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopNavBarWithScreenTitledIcon(
+    modifier: Modifier = Modifier,
+    screenTitle:  @Composable () -> Unit = {},
+    showBackIcon: Boolean = true,
+    onBackIcon: ImageVector = Icons.Filled.KeyboardArrowLeft,
+    onBackClicked: () -> Unit = {},
+    actions: @Composable() (RowScope.() -> Unit) = {}
+){
+
+    TopAppBar(
+        title = screenTitle,
+        modifier = modifier,
+        navigationIcon = {
+            // if nav icon is opted in
+            if (showBackIcon) {
+                IconButton(
+                    onClick = onBackClicked,
+                ) {
+                    Icon(
+                        imageVector = onBackIcon,
+                        contentDescription = stringResource(
+                            R.string.navigation_back_icon
+                        )
+                    )
+                }
+            }
+        },
+        actions = actions
     )
 }
 
