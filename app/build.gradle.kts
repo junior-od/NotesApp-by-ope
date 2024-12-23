@@ -60,7 +60,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     // google fonts library
-    implementation(libs.androidx.google.font)//
+    implementation(libs.androidx.google.font)
+    // splash screen api
+    implementation(libs.androidx.splashscreen)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
