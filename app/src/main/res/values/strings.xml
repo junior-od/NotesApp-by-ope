@@ -30,4 +30,5 @@
     <string name="remove_to_do_item_icon">remove to do item icon</string>
     <string name="what_to_do">What To Do</string>
     <string name="add_todo_icon">add todo icon</string>
+    <string name="tags">Tags</string>
 </resources>
