@@ -1,0 +1,19 @@
+package com.example.notesapp.di
+
+import com.example.notesapp.ui.auth.signup.SignUpViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+
+/**
+ * this is the container to define how viewmodel dependencies are to be provided across the app
+ * */
+
+val viewModelModule = module {
+    // provide a viewmodel instance of sign up viewmodel
+    viewModel {
+        SignUpViewModel(
+            get(),
+            get()
+        )
+    }
+}

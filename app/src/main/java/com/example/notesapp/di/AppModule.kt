@@ -6,5 +6,9 @@ package com.example.notesapp.di
 
 
 val appModule = listOf(
-    databaseModule
+    databaseModule,
+    firebaseModule,
+    repositoryModule,
+    useCaseModule,
+    viewModelModule
 )

@@ -2,7 +2,7 @@
 agp = "8.5.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.0"
-junit = "4.14-SNAPSHOT"
+junit = "4.13"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
@@ -15,10 +15,13 @@ koin = "3.4.0"
 navigationCompose = "2.8.5"
 serializationJson = "1.6.3"
 kotlinCoroutine = "1.8.1"
+googleServices = "4.4.2"
+firebaseBom = "33.7.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-junit = { group = "junit", name = "junit", version = "4.13" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -38,13 +41,17 @@ androidx-room-compiler = { group = "androidx.room" , name = "room-compiler" , ve
 androidx-room-ktx = { group = "androidx.room" , name = "room-ktx" , version.ref = "room" }
 io-koin-core = { group = "io.insert-koin" , name = "koin-core" , version.ref = "koin" }
 io-koin-android = { group = "io.insert-koin" , name = "koin-android" , version.ref = "koin" }
+io-koin-android-compose = { group = "io.insert-koin" , name = "koin-androidx-compose" , version.ref = "koin" }
 androidx-navigation-compose = { group = "androidx.navigation" , name = "navigation-compose" , version.ref = "navigationCompose" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx" , name = "kotlinx-serialization-json" , version.ref = "serializationJson" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx" , name = "kotlinx-coroutines-android" , version.ref = "kotlinCoroutine" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx" , name = "kotlinx-coroutines-core" , version.ref = "kotlinCoroutine" }
-
+google-firebase-bom = { group = "com.google.firebase" , name = "firebase-bom" , version.ref = "firebaseBom" }
+google-firebase-auth = { group = "com.google.firebase" , name = "firebase-auth"}
+androidx-lifecycle-compose = { group = "androidx.lifecycle" , name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services" , version.ref = "googleServices" }
 

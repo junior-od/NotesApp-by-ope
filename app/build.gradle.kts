@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.services)
     kotlin("kapt")
     kotlin("plugin.serialization") version "1.9.0"
 }
@@ -78,6 +79,7 @@ dependencies {
     // koin library
     implementation(libs.io.koin.core)
     implementation(libs.io.koin.android)
+    implementation(libs.io.koin.android.compose)
 
     // compose navigation
     implementation(libs.androidx.navigation.compose)
@@ -86,6 +88,13 @@ dependencies {
     // coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+
+    // firebase dependecies
+    implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.firebase.auth)
+
+    // compose lifecycle runtime
+    implementation(libs.androidx.lifecycle.compose)
 
 
     testImplementation(libs.junit)

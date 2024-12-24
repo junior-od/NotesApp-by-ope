@@ -23,22 +23,22 @@ data class User(
     var id: String,
 
     @ColumnInfo(name = UserTable.FIRST_NAME)
-    var firstName: String?,
+    var firstName: String? = null,
 
     @ColumnInfo(name = UserTable.LAST_NAME)
-    var lastName: String?,
+    var lastName: String? = null,
 
     @ColumnInfo(name = UserTable.EMAIL)
-    var email: String?,
+    var email: String? = null,
 
     @ColumnInfo(name = UserTable.SIGN_UP_METHOD)
-    var signUpMethod: String?,
+    var signUpMethod: String? = null,
 
     @ColumnInfo(name = UserTable.CREATED_AT)
-    var createdAt: String?,
+    var createdAt: String? = null,
 
     @ColumnInfo(name = UserTable.UPDATED_AT)
-    var updatedAt: String?,
+    var updatedAt: String? = null,
 
     @ColumnInfo(name = UserTable.SYNC_FLAG)
     var syncFlag: Int = 0,
