@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("kapt")
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 android {
@@ -42,6 +44,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+    kapt {
+        correctErrorTypes = true
+        useBuildCache = true
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -63,6 +69,24 @@ dependencies {
     implementation(libs.androidx.google.font)
     // splash screen api
     implementation(libs.androidx.splashscreen)
+
+    // room library
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
+    // koin library
+    implementation(libs.io.koin.core)
+    implementation(libs.io.koin.android)
+
+    // compose navigation
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    // coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

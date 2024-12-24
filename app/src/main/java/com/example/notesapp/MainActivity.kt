@@ -19,6 +19,8 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.rememberNavController
+import com.example.notesapp.ui.navigation.NotesNavHost
 import com.example.notesapp.ui.theme.NotesAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,10 +52,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NotesAppTheme {
+
+                val navHostController = rememberNavController()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    NotesNavHost(
+                        modifier = Modifier.padding(innerPadding),
+                        navHostController = navHostController
                     )
                 }
             }
