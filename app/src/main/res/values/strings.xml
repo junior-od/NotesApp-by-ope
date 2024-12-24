@@ -31,4 +31,10 @@
     <string name="what_to_do">What To Do</string>
     <string name="add_todo_icon">add todo icon</string>
     <string name="tags">Tags</string>
+    <string name="onboarding_screen">Onboarding Screen</string>
+    <string name="sign_in_screen">Sign In Screen</string>
+    <string name="sign_up_screen">Sign Up Screen</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="note_category_screen">Note Category Screen</string>
+    <string name="note_screen">Note Screen</string>
 </resources>

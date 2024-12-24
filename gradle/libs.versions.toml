@@ -10,6 +10,11 @@ activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 fonts = "1.7.6"
 splashScreen = "1.0.1"
+room = "2.6.1"
+koin = "3.4.0"
+navigationCompose = "2.8.5"
+serializationJson = "1.6.3"
+kotlinCoroutine = "1.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +33,16 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-google-font = { group = "androidx.compose.ui", name = "ui-text-google-fonts" , version.ref = "fonts" }
 androidx-splashscreen = { group = "androidx.core" , name = "core-splashscreen" , version.ref = "splashScreen" }
+androidx-room-runtime = { group = "androidx.room" , name = "room-runtime" , version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room" , name = "room-compiler" , version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room" , name = "room-ktx" , version.ref = "room" }
+io-koin-core = { group = "io.insert-koin" , name = "koin-core" , version.ref = "koin" }
+io-koin-android = { group = "io.insert-koin" , name = "koin-android" , version.ref = "koin" }
+androidx-navigation-compose = { group = "androidx.navigation" , name = "navigation-compose" , version.ref = "navigationCompose" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx" , name = "kotlinx-serialization-json" , version.ref = "serializationJson" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx" , name = "kotlinx-coroutines-android" , version.ref = "kotlinCoroutine" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx" , name = "kotlinx-coroutines-core" , version.ref = "kotlinCoroutine" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
