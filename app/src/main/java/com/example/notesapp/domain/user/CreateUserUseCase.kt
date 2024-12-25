@@ -21,6 +21,9 @@ class CreateUserUseCase(
         user: User,
         signUpMethod: UserConstants.SignUpMethods = UserConstants.SignUpMethods.EMAIL_PASSWORD
     ){
+
+        // todo later add some check to save from google sign in if user record does not exist
+
         val updateUserInfo = user.copy(
             id = userId,
             signUpMethod = signUpMethod.name,

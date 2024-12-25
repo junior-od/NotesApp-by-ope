@@ -1,6 +1,7 @@
 package com.example.notesapp.ui.auth.signup
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,8 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
+import com.example.notesapp.ui.auth.signin.SignInViewModel
 import com.example.notesapp.ui.components.EditInputField
 import com.example.notesapp.ui.components.EditInputFieldPassword
+import com.example.notesapp.ui.components.ErrorMessage
 import com.example.notesapp.ui.components.NotesButton
 import com.example.notesapp.ui.components.TopNavBarWithScreenTitle
 import com.example.notesapp.ui.theme.NotesAppTheme
@@ -71,6 +77,31 @@ fun SignUpScreen(
             screenTitle = stringResource(R.string.sign_up),
             onBackClicked = onBackClicked
         )
+
+        var showError by remember {
+            mutableStateOf(false)
+        }
+
+        // observe ui state changes
+        LaunchedEffect(key1 = signUpState) {
+            if (signUpState is SignUpViewModel.SignUpUi.Success) {
+                onSignUpClicked()
+                signUpViewModel.resetSignUpUiState()
+            }else if(signUpState is SignUpViewModel.SignUpUi.Error) {
+                showError = true
+            }
+        }
+
+        // hide or show error here
+        AnimatedVisibility(visible = showError) {
+            val errorMessage = if(signUpState is SignUpViewModel.SignUpUi.Error)  (signUpState as SignUpViewModel.SignUpUi.Error).message else ""
+            ErrorMessage(
+                message = errorMessage,
+                onRemoveMessageClicked = {
+                    showError = false
+                }
+            )
+        }
 
         // form section
         SignUpForm(
@@ -112,13 +143,7 @@ fun SignUpScreen(
             }
         )
 
-        // observe ui state changes
-        LaunchedEffect(key1 = signUpState) {
-            if (signUpState is SignUpViewModel.SignUpUi.Success) {
-                onSignUpClicked()
-                signUpViewModel.resetSignUpUiState()
-            }
-        }
+
     }
 }
 

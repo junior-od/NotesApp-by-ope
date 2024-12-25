@@ -1,5 +1,6 @@
 package com.example.notesapp.data.user
 
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepo {
@@ -17,9 +18,26 @@ interface UserRepo {
                 ) -> Unit
     )
 
-    suspend fun signInWithEmailPassword(email: String, password: String)
+    suspend fun signInWithEmailPassword(
+        email: String,
+        password: String,
+        onResultCallback: (
+            result: String,
+            isSuccessFul: Boolean
+                ) -> Unit
+    )
 
     suspend fun signOut()
 
-    suspend fun signInWithGoogle()
+    suspend fun signInWithGoogle(
+        idToken: String,
+        onResultCallback: (
+            result: String,
+            isSuccessFul: Boolean
+        ) -> Unit,
+        onGoogleSignInCallBack: (
+            user: FirebaseUser?,
+            isSuccessFul: Boolean
+        ) -> Unit
+    )
 }

@@ -1,6 +1,7 @@
 package com.example.notesapp.di
 
 import com.example.notesapp.domain.user.CreateUserUseCase
+import com.example.notesapp.domain.user.SignInUseCase
 import com.example.notesapp.domain.user.SignUpUseCase
 import org.koin.dsl.module
 
@@ -18,5 +19,10 @@ val useCaseModule  = module {
     // provide a single instance of sign up use case
     single<SignUpUseCase> {
         SignUpUseCase(get())
+    }
+
+    // provide a single instance on sign in use case
+    single<SignInUseCase> {
+        SignInUseCase(get())
     }
 }

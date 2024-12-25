@@ -40,4 +40,5 @@
     <string name="create_an_account_to_keep_your_thoughts_in_one_place">Create an account to keep your thoughts in one place</string>
     <string name="categorize_your_notes_for_easy_access">Categorize your notes for easy access</string>
     <string name="make_a_list_of_things_to_do">Make a list of things to-do</string>
+    <string name="sign_in_with_google">Sign In WIth Google</string>
 </resources>

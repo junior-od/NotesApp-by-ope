@@ -1,5 +1,6 @@
 package com.example.notesapp.di
 
+import com.example.notesapp.ui.auth.signin.SignInViewModel
 import com.example.notesapp.ui.auth.signup.SignUpViewModel
 import com.example.notesapp.ui.onboarding.OnboardingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -22,4 +23,12 @@ val viewModelModule = module {
             get()
         )
     }
+
+    // provide a viewmodel instance of sign in viewmodel
+        viewModel {
+            SignInViewModel(
+                get(),
+                get()
+            )
+        }
 }

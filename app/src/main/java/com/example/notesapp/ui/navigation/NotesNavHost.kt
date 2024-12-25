@@ -59,7 +59,7 @@ fun NotesNavHost(
                 onBackClicked = {
                     navHostController.navigateUp()
                 },
-                onSignInClicked = { email, password ->
+                onSignInClicked = {
                     navHostController.popToScreen(NotesDestinations.Home)
                 }
             )

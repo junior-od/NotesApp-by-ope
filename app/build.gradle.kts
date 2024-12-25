@@ -89,12 +89,18 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
-    // firebase dependecies
+    // firebase dependencies
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.auth)
 
     // compose lifecycle runtime
     implementation(libs.androidx.lifecycle.compose)
+
+    // auth services with credential manager
+    implementation(libs.google.play.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.auth)
+    implementation(libs.google.identity.googleid)
 
 
     testImplementation(libs.junit)
