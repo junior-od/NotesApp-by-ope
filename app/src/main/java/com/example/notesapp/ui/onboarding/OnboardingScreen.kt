@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -42,9 +43,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
 import com.example.notesapp.ui.components.NotesButton
 import com.example.notesapp.ui.theme.NotesAppTheme
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * composable components for the onboarding screen
@@ -60,7 +63,8 @@ import com.example.notesapp.ui.theme.NotesAppTheme
 fun OnboardingScreen(
     modifier: Modifier = Modifier,
     onCreateAccountClicked: () -> Unit = {},
-    onSignInClicked: () -> Unit = {}
+    onSignInClicked: () -> Unit = {},
+    onboardingViewModel: OnboardingViewModel = koinViewModel()
 ) {
 
     Column(
@@ -88,19 +92,13 @@ fun OnboardingScreen(
             )
         )
 
-        // todo get list from viewmodel
-        val itemsll = listOf(
-            "https://via.placeholder.com/300x200?text=Image+1",
-            "https://via.placeholder.com/300x200?text=Image+2",
-            "https://via.placeholder.com/300x200?text=Image+3",
-            "https://via.placeholder.com/300x200?text=Image+4",
-            "https://via.placeholder.com/300x200?text=Image+5"
-        )
+
+        val onboardingFeaturesList by onboardingViewModel.onboardingFeatures.collectAsStateWithLifecycle()
 
         // carousel section
         OnboardingCarousel(
             modifier = Modifier.fillMaxHeight(0.8f),
-            itemsToDisplay = itemsll
+            itemsToDisplay = onboardingFeaturesList
         )
 
         // auth section
@@ -121,7 +119,7 @@ fun OnboardingScreen(
 @Composable
 fun OnboardingCarousel(
     modifier: Modifier = Modifier,
-    itemsToDisplay: List<String> = emptyList()
+    itemsToDisplay: List<Int> = emptyList()
 ) {
     Column(
         modifier = modifier,
@@ -167,7 +165,7 @@ fun OnboardingCarousel(
 @Composable
 fun OnboardingPictureTextLazyRow(
     modifier: Modifier = Modifier,
-    itemsToDisplay: List<String>,
+    itemsToDisplay: List<Int> = emptyList(),
     listState: LazyListState = rememberLazyListState(0),
     flingBehavior: FlingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 ) {
@@ -196,7 +194,7 @@ fun OnboardingPictureTextLazyRow(
                 modifier = Modifier
                     .size(screenWidth)
                     .padding(8.dp),
-                item = item
+                item = stringResource(id = item)
             )
         }
     }
@@ -247,7 +245,7 @@ fun OnboardingPictureText(
 @Composable
 fun CarouselIndicators(
     modifier: Modifier = Modifier,
-    listSize: List<String> = emptyList(),
+    listSize: List<Int> = emptyList(),
     currentIndex: Int = 0,
 ) {
 
@@ -289,6 +287,9 @@ fun Indicator(isActive: Boolean) {
 
 /**
  * Auth section to display create account or sign in
+ *
+ * @param onSignInClicked triggers a function when log in button is clicked
+ * @param onCreateAccountClicked triggers a function when create account button is clicked
  * */
 @Composable
 fun AuthSection(

@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -112,22 +113,10 @@ fun SignUpScreen(
         )
 
         // observe ui state changes
-        when (signUpState) {
-            is SignUpViewModel.SignUpUi.Loading -> {
-                // todo show loader compose here
-            }
-
-            is SignUpViewModel.SignUpUi.Success -> {
+        LaunchedEffect(key1 = signUpState) {
+            if (signUpState is SignUpViewModel.SignUpUi.Success) {
                 onSignUpClicked()
-            }
-
-            is SignUpViewModel.SignUpUi.Error -> {
-               val errorMessage = (signUpState as SignUpViewModel.SignUpUi.Error).message
-               // todo display error message from request here
-            }
-
-            else -> {
-                // do nothing
+                signUpViewModel.resetSignUpUiState()
             }
         }
     }

@@ -2,6 +2,7 @@ package com.example.notesapp.ui.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.notesapp.data.constants.user.UserConstants
 import com.example.notesapp.data.user.User
 import com.example.notesapp.domain.user.CreateUserUseCase
 import com.example.notesapp.domain.user.SignUpUseCase
@@ -52,6 +53,13 @@ class SignUpViewModel(
     )
 
     val passwordVisible get() = _passwordVisible
+
+    /**
+     * reset signupUi State
+     * */
+    fun resetSignUpUiState() {
+        _signUpUiState.value = null
+    }
 
     /**
      * update password
@@ -147,7 +155,8 @@ class SignUpViewModel(
         withContext(Dispatchers.IO){
             createUserUseCase(
                 userId = userId,
-                user = _newUser.value
+                user = _newUser.value,
+                signUpMethod = UserConstants.SignUpMethods.EMAIL_PASSWORD
             )
         }
 
