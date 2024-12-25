@@ -24,6 +24,14 @@ class UserRepository(
     }
 
     /**
+     * is any user logged in on the device
+     * */
+    override fun hasUser(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
+
+
+    /**
      *  sign up with user provided information
      *
      *  @param email expects email

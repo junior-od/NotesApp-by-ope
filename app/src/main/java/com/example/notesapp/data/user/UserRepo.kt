@@ -9,6 +9,8 @@ interface UserRepo {
 
     fun signedInUser(): Flow<User?>
 
+    fun hasUser(): Boolean
+
     suspend fun signUpWithUserInfo(
         email: String,
         password: String,

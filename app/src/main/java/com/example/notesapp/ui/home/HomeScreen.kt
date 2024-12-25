@@ -34,9 +34,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +50,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
 import com.example.notesapp.ui.components.EditInputFieldWitTrailingIcon
 import com.example.notesapp.ui.components.TopNavBarWithScreenTitledIcon
 import com.example.notesapp.ui.theme.NotesAppTheme
 import com.example.notesapp.ui.theme.rolledEdgeShape
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * composable components for the home screen
@@ -64,7 +69,8 @@ fun HomeScreen(
     onLogOutClicked: () -> Unit = {},
     onNoteItemClicked: (item: NotesItem) -> Unit = {_ -> },
     onNewNoteClicked: () -> Unit = { },
-    onAddNewCategoryClicked: () -> Unit = {}
+    onAddNewCategoryClicked: () -> Unit = {},
+    homeViewModel: HomeViewModel = koinViewModel()
 ) {
 
     Column(
@@ -75,10 +81,26 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.background
             )
     ){
+        val homeState by homeViewModel.homeStateUi.collectAsStateWithLifecycle()
+        val coroutineScope = rememberCoroutineScope()
+
+        // observe ui state changes
+        LaunchedEffect(key1 = homeState) {
+            if (homeState is HomeViewModel.HomeStateUi.SignedOut) {
+                onLogOutClicked()
+                homeViewModel.resetHomeStateUi()
+            }
+        }
+
         // top section
         HomeTopNav(
             modifier = Modifier.fillMaxWidth(),
-            onLogOutClicked = onLogOutClicked
+            onLogOutClicked = {
+                coroutineScope.launch {
+                    homeViewModel.signOutUser()
+                }
+            },
+            onNewNoteClicked = onNewNoteClicked
         )
 
         // todo move to viewmodel
@@ -140,17 +162,22 @@ fun HomeScreen(
 /**
  * HomeTopNav of home screen
  * @param onLogOutClicked : listens for when log out icon is clicked
+ * @param onNewNoteClicked : listens for when new note is clicked
  * */
 @Composable
 fun HomeTopNav(
     modifier: Modifier = Modifier,
-    onLogOutClicked: () -> Unit = {}
+    onLogOutClicked: () -> Unit = {},
+    onNewNoteClicked: () -> Unit = { }
 ) {
     TopNavBarWithScreenTitledIcon(
         modifier = modifier,
         screenTitle = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .clickable(
+                        onClick = onNewNoteClicked
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
@@ -166,7 +193,7 @@ fun HomeTopNav(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = stringResource(R.string.my_notes),
+                    text = stringResource(R.string.add_note),
                     style = MaterialTheme.typography.titleLarge
                 )
             }

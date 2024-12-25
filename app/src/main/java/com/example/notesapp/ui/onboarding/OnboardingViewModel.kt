@@ -5,7 +5,7 @@ import com.example.notesapp.R
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
- * Sign up view model to act
+ * OnboardingViewModel to act
  * as a middle man communication between
  * ui and data needed for the onboarding flow
  * */

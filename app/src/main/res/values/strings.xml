@@ -41,4 +41,5 @@
     <string name="categorize_your_notes_for_easy_access">Categorize your notes for easy access</string>
     <string name="make_a_list_of_things_to_do">Make a list of things to-do</string>
     <string name="sign_in_with_google">Sign In WIth Google</string>
+    <string name="add_note">Add Note</string>
 </resources>
