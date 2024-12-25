@@ -14,16 +14,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.example.notesapp.ui.components.dismissKeyboardOnTouchOutsideInputArea
+import com.example.notesapp.ui.navigation.NotesDestinations
 import com.example.notesapp.ui.navigation.NotesNavHost
 import com.example.notesapp.ui.theme.NotesAppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +38,7 @@ class MainActivity : ComponentActivity() {
             // check the value after every frame while
             // it is true the splash screen still be visible else its gone
             setKeepOnScreenCondition{
-                // todo check if user is logged in to know what to display
+                // todo run user table fetch is success once then user can proceed
                keepScreen
             }
 
@@ -52,13 +57,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NotesAppTheme {
+                val mainActivityViewModel: MainActivityViewModel = koinViewModel()
+
+                // check if user is still logged in to know where to navigate to
+                val startDestination = if (mainActivityViewModel.isUserLoggedIn()) NotesDestinations.Home else NotesDestinations.Onboarding
 
                 val navHostController = rememberNavController()
+                val keyboardController = LocalSoftwareKeyboardController.current
+                val focusManager = LocalFocusManager.current
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NotesNavHost(
-                        modifier = Modifier.padding(innerPadding),
-                        navHostController = navHostController
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .dismissKeyboardOnTouchOutsideInputArea(
+                                keyboardController = keyboardController,
+                                focusManager = focusManager
+                            ),
+                        navHostController = navHostController,
+                        startDestination = startDestination
                     )
                 }
             }

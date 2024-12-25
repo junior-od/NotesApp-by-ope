@@ -49,8 +49,8 @@ fun NotesNavHost(
                 onBackClicked = {
                     navHostController.navigateUp()
                 },
-                onSignUpClicked = { email, password, firstname, lastname ->
-                    navHostController.goToScreen(NotesDestinations.Home)
+                onSignUpClicked = {
+                    navHostController.popToScreen(NotesDestinations.Home)
                 }
             )
         }
@@ -59,15 +59,15 @@ fun NotesNavHost(
                 onBackClicked = {
                     navHostController.navigateUp()
                 },
-                onSignInClicked = { email, password ->
-                    navHostController.goToScreen(NotesDestinations.Home)
+                onSignInClicked = {
+                    navHostController.popToScreen(NotesDestinations.Home)
                 }
             )
         }
         composable<NotesDestinations.Home> {
             HomeScreen(
                 onLogOutClicked = {
-                    navHostController.goToScreen(NotesDestinations.Onboarding)
+                    navHostController.popToScreen(NotesDestinations.Onboarding)
                 },
                 onNoteItemClicked = {
                     navHostController.goToScreen(NotesDestinations.Note)
@@ -86,7 +86,7 @@ fun NotesNavHost(
                     navHostController.navigateUp()
                 },
                 onAddNewCategoryClicked = {
-                    navHostController.goToScreen(NotesDestinations.Home)
+                    navHostController.popToScreenInBackStack(NotesDestinations.Home)
                 }
             )
         }
@@ -96,10 +96,10 @@ fun NotesNavHost(
                     navHostController.navigateUp()
                 },
                 onDeleteNoteClicked = {
-                    navHostController.goToScreen(NotesDestinations.Home)
+                    navHostController.popToScreenInBackStack(NotesDestinations.Home)
                 },
                 onSaveClicked = {
-                    navHostController.goToScreen(NotesDestinations.Home)
+                    navHostController.popToScreenInBackStack(NotesDestinations.Home)
                 }
             )
         }
@@ -122,4 +122,31 @@ fun NavController.goToScreen(screen: NotesDestinations) {
             saveState = true
         )
     }
+}
+
+/**
+ * Extention function to navigate to a screen and
+ * clear all destinations in back stack
+ *
+ * @param screen expects screen as NotesDestinations
+ * */
+
+fun NavController.popToScreen(screen: NotesDestinations) {
+    return this.navigate(screen) {
+        popUpTo(0) { inclusive = true }
+    }
+
+}
+
+/**
+ * Extention function to navigate to a screen in back stack
+ *
+ * @param screen expects screen as NotesDestinations
+ * */
+
+fun NavController.popToScreenInBackStack(screen: NotesDestinations) {
+    return this.navigate(screen) {
+        popUpTo(screen) { inclusive = true }
+    }
+
 }
