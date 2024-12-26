@@ -1,6 +1,7 @@
 package com.example.notesapp.di
 
 import com.example.notesapp.data.db.NotesDatabase
+import com.example.notesapp.data.notecategory.NoteCategoryDao
 import com.example.notesapp.data.user.UserDao
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -20,6 +21,12 @@ val databaseModule = module {
     single<UserDao> {
         val database = get<NotesDatabase>() // retrieve single instance of db provided
         database.userDao() // return userDao
+    }
+
+    // provide single instance of note category dao
+    single<NoteCategoryDao>{
+        val database = get<NotesDatabase>() // retrieve single instance of db provided
+        database.noteCategoryDao()
     }
 
 }

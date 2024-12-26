@@ -18,22 +18,24 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
 import com.example.notesapp.ui.components.EditInputField
 import com.example.notesapp.ui.components.NotesButton
 import com.example.notesapp.ui.components.TopNavBarWithScreenTitle
 import com.example.notesapp.ui.theme.NotesAppTheme
 import com.example.notesapp.ui.theme.inputFormHeight
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * composable components for the Note Category screen
@@ -43,7 +45,8 @@ import com.example.notesapp.ui.theme.inputFormHeight
 fun NoteCategoryScreen(
     modifier: Modifier = Modifier,
     onBackClicked: () -> Unit = {},
-    onAddNewCategoryClicked: (category: String) -> Unit = {}
+    onAddNewCategoryClicked: () -> Unit = {},
+    noteCategoryViewModel: NoteCategoryViewModel = koinViewModel()
 ) {
 
     Column(
@@ -61,27 +64,54 @@ fun NoteCategoryScreen(
             onBackClicked = onBackClicked
         )
 
+        val coroutineScope = rememberCoroutineScope()
+
+        val noteCategoryUiState by noteCategoryViewModel.noteCategoryUiState.collectAsStateWithLifecycle()
+        val noteCategory by noteCategoryViewModel.noteCategory.collectAsStateWithLifecycle()
+
+
+        // observe ui state changes
+        LaunchedEffect(key1 = noteCategoryUiState) {
+            if (noteCategoryUiState is NoteCategoryViewModel.NoteCategoryUiState.Success) {
+                onAddNewCategoryClicked()
+                noteCategoryViewModel.resetNoteCategoryUiState()
+            }
+        }
+
         // form section
         CategoryForm(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxHeight(0.7f)
+                .fillMaxHeight(0.7f),
+            category = noteCategory.name ?: "",
+            onCategoryChange = {
+                noteCategoryViewModel.updateCategoryName(it)
+            }
         )
 
         // bottom section
         CategoryButtonSection(
             modifier = modifier.fillMaxSize(),
-            onAddCategoryClicked = onAddNewCategoryClicked
+            onAddCategoryClicked = {
+                coroutineScope.launch {
+                    noteCategoryViewModel.saveNoteCategory()
+                }
+            }
         )
     }
 }
 
 /**
  * category form
+ *
+ * @param category expects category name to be in the input box
+ * @param onCategoryChange observes category name changes in the input box
  * */
 @Composable
 fun CategoryForm(
     modifier: Modifier = Modifier,
+    category: String = "",
+    onCategoryChange: (text: String) -> Unit = {_ ->}
 ){
 
     Column(
@@ -90,10 +120,7 @@ fun CategoryForm(
         )
     ) {
 
-        // todo move this to viewmodel
-        var category by remember {
-            mutableStateOf("")
-        }
+
 
         Spacer(modifier = Modifier.height(30.dp))
 
@@ -102,9 +129,7 @@ fun CategoryForm(
                 .height(inputFormHeight)
                 .fillMaxWidth(),
             text = category,
-            onValueChange = {
-                category = it
-            },
+            onValueChange = onCategoryChange,
             placeholder = stringResource(R.string.category),
             keyboardOptions = KeyboardOptions
                 .Default.copy(
@@ -119,11 +144,13 @@ fun CategoryForm(
 
 /**
  * category button section
+ *
+ * @param onAddCategoryClicked triggers function when on add category is clicked
  * */
 @Composable
 fun CategoryButtonSection(
     modifier: Modifier = Modifier,
-    onAddCategoryClicked: (category: String) -> Unit = { _ -> },
+    onAddCategoryClicked: () -> Unit = {  },
 ) {
     Box(modifier = modifier) {
         val buttonWidthModifier = Modifier
@@ -131,9 +158,7 @@ fun CategoryButtonSection(
             .padding(horizontal = 16.dp)
         NotesButton(
             modifier = buttonWidthModifier.align(Alignment.BottomStart),
-            onClick = {
-                onAddCategoryClicked("")
-            },
+            onClick = onAddCategoryClicked,
             buttonText = stringResource(R.string.add_category)
         )
         Spacer(modifier = Modifier.height(8.dp))

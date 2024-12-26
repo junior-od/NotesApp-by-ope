@@ -1,5 +1,6 @@
 package com.example.notesapp.di
 
+import com.example.notesapp.domain.notecategory.CreateNoteCategoryUseCase
 import com.example.notesapp.domain.user.CreateUserUseCase
 import com.example.notesapp.domain.user.SignInUseCase
 import com.example.notesapp.domain.user.SignOutUseCase
@@ -33,8 +34,15 @@ val useCaseModule  = module {
         UserLoggedInUseCase(get())
     }
 
-    // provide a single instance a SignOut UseCase
+    // provide a single instance of SignOut UseCase
     single<SignOutUseCase>{
         SignOutUseCase(get())
+    }
+
+    // provide a single instance of CreateNoteCategory UseCase
+    single<CreateNoteCategoryUseCase>{
+        CreateNoteCategoryUseCase(
+            get(), get()
+        )
     }
 }
