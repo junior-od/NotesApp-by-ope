@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notesapp.data.notecategory.NoteCategory
 import com.example.notesapp.domain.notecategory.CreateNoteCategoryUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * NoteCategory View Model to act
@@ -52,12 +54,15 @@ class NoteCategoryViewModel(
     /**
      * save note category
      * */
-    suspend fun saveNoteCategory(){
+    suspend fun saveNoteCategory() {
         viewModelScope.launch {
-            createNoteCategoryUseCase(
-               noteCategory = _noteCategory.value
-            )
+            withContext(Dispatchers.IO){
+                createNoteCategoryUseCase(
+                    noteCategory = _noteCategory.value
+                )
 
+
+            }
             _noteCategoryUiState.value = NoteCategoryUiState.Success
         }
     }
