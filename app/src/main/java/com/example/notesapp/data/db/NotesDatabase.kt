@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.notesapp.data.db.migrations.MIGRATION_1_2
+import com.example.notesapp.data.notecategory.NoteCategory
+import com.example.notesapp.data.notecategory.NoteCategoryDao
 import com.example.notesapp.data.user.User
 import com.example.notesapp.data.user.UserDao
 
@@ -14,11 +17,17 @@ import com.example.notesapp.data.user.UserDao
 
 @Database(
     entities = [
+        NoteCategory::class,
         User::class
                ],
-    version = 1
+    version = 2
 )
 abstract class NotesDatabase: RoomDatabase() {
+
+    /**
+     * dao for the note category table
+     * */
+    abstract fun noteCategoryDao(): NoteCategoryDao
 
     /**
      * dao for the user table
@@ -39,7 +48,11 @@ abstract class NotesDatabase: RoomDatabase() {
                         context = context.applicationContext,
                         klass = NotesDatabase::class.java,
                         name = DATABASE_NAME
-                    ).build()
+                    )
+                        .addMigrations(
+                            MIGRATION_1_2
+                        )
+                        .build()
                 }
             }
             return notesDbInstance!!

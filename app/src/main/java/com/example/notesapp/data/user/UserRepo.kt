@@ -9,6 +9,8 @@ interface UserRepo {
 
     fun signedInUser(): Flow<User?>
 
+    fun getSignedInUserId(): String
+
     fun hasUser(): Boolean
 
     suspend fun signUpWithUserInfo(

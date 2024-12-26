@@ -23,6 +23,10 @@ class UserRepository(
         TODO("Not yet implemented")
     }
 
+    override fun getSignedInUserId(): String {
+        return firebaseAuth.currentUser?.uid.toString()
+    }
+
     /**
      * is any user logged in on the device
      * */
