@@ -48,6 +48,7 @@ val viewModelModule = module {
         HomeViewModel(
             get(),
             get(),
+            get(),
             get()
         )
     }
@@ -62,6 +63,7 @@ val viewModelModule = module {
     // provide a viewmodel instance of the note view model
     viewModel {
         NoteViewModel(
+            get(),
             get(),
             get(),
             get(),

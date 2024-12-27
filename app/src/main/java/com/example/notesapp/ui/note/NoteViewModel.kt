@@ -14,6 +14,7 @@ import com.example.notesapp.domain.todos.CreateNoteTodosUseCase
 import com.example.notesapp.domain.todos.EditNoteTodosUseCase
 import com.example.notesapp.domain.todos.GetTodosByNoteIdUseCase
 import com.example.notesapp.domain.user.UserLoggedInIdUseCase
+import com.example.notesapp.domain.util.FormatFullDateTimeUseCase
 import com.example.notesapp.utils.UniqueIdGeneratorUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,8 @@ class NoteViewModel(
     private val userLoggedInIdUseCase: UserLoggedInIdUseCase,
     private val getNoteUseCase: GetNoteUseCase,
     private val getTodosByNoteIdUseCase: GetTodosByNoteIdUseCase,
-    private val deleteNoteUseCase: DeleteNoteUseCase
+    private val deleteNoteUseCase: DeleteNoteUseCase,
+    private val formatFullDateTimeUseCase: FormatFullDateTimeUseCase
 ): ViewModel() {
 
     private var _noteUiState = MutableStateFlow<NoteUiState?>(null)
@@ -270,6 +272,15 @@ class NoteViewModel(
      * */
     fun updateCategoryBottomSheetState(state: Boolean){
         _showTagBottomSheet.value = state
+    }
+
+    /**
+     * get note last updated date
+     * */
+    fun getNoteLastUpdatedDate(): String{
+        return formatFullDateTimeUseCase(
+            date = _note.value?.updatedAt
+        )
     }
 
 }

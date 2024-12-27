@@ -17,6 +17,7 @@ import com.example.notesapp.domain.user.SignOutUseCase
 import com.example.notesapp.domain.user.SignUpUseCase
 import com.example.notesapp.domain.user.UserLoggedInIdUseCase
 import com.example.notesapp.domain.user.UserLoggedInUseCase
+import com.example.notesapp.domain.util.FormatFullDateTimeUseCase
 import org.koin.dsl.module
 import kotlin.math.sin
 
@@ -129,11 +130,16 @@ val useCaseModule  = module {
         )
     }
 
-    // provide a single of GetNotesWithTodos UseCase
+    // provide a single instance of GetNotesWithTodos UseCase
     single<GetNotesWithTodosUseCase> {
         GetNotesWithTodosUseCase(
             get(),
             get()
         )
+    }
+
+    // provide a single instance of FormatFullDateTimeUseCase
+    single<FormatFullDateTimeUseCase>{
+        FormatFullDateTimeUseCase()
     }
 }

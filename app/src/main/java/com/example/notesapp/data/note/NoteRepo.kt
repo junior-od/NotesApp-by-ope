@@ -8,6 +8,13 @@ interface NoteRepo {
     suspend fun getNoteById(id: String?): Note?
 
     fun getNotesWithTodosByUserId(
-        userId: String?
+        userId: String?,
+        search: String
+    ): Flow<List<NoteWithTodosModel>>
+
+    fun getNotesWithTodosByUserIdAndCategoryId(
+        userId: String?,
+        search: String,
+        categoryId: String
     ): Flow<List<NoteWithTodosModel>>
 }

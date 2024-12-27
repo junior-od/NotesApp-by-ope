@@ -213,7 +213,7 @@ fun NavBody(
             // last date edited
             LastEditedSection(
                 modifier = Modifier.fillMaxWidth(),
-                lastEditedInfo = "23rd of December 2024 at 22:00 PM"
+                lastEditedInfo = noteViewModel.getNoteLastUpdatedDate()
             )
 
             val title = TextFieldValue(
