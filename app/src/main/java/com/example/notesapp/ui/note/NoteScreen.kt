@@ -36,7 +36,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +46,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
@@ -55,18 +55,20 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
+import com.example.notesapp.data.constants.note.NoteConstants
+import com.example.notesapp.data.todos.NoteTodo
 import com.example.notesapp.ui.components.EditInputField
 import com.example.notesapp.ui.components.NotesEditInputField
 import com.example.notesapp.ui.components.TagBottomSheet
 import com.example.notesapp.ui.components.TopNavBarWithScreenTitledIcon
 import com.example.notesapp.ui.components.dismissKeyboardOnTouchOutsideInputArea
-import com.example.notesapp.ui.home.NotesTodoItem
-import com.example.notesapp.ui.home.todos
 import com.example.notesapp.ui.theme.NotesAppTheme
 import com.example.notesapp.ui.theme.calculateLineForOffset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * composable components for the Note screen
@@ -80,10 +82,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun NotesScreen(
     modifier: Modifier = Modifier,
-    entryType: String = "",
+    entryType: NoteConstants.NoteEntryTypes = NoteConstants.NoteEntryTypes.NEW_NOTE,
+    noteId: String? = null,
     onBackClicked: () -> Unit = {},
     onSaveClicked: () -> Unit = {},
-    onDeleteNoteClicked: () -> Unit = {}
+    onDeleteNoteClicked: () -> Unit = {},
+    noteViewModel: NoteViewModel = koinViewModel()
 ){
 
     Column(
@@ -94,39 +98,76 @@ fun NotesScreen(
                 color = MaterialTheme.colorScheme.background
             )
     ) {
+        val coroutineScope = rememberCoroutineScope()
+        LaunchedEffect(key1 = Unit) {
+            noteViewModel.initializeNote(noteId = noteId)
+        }
+
+        val noteUiState by noteViewModel.noteUiState.collectAsStateWithLifecycle()
+        val getCategories by noteViewModel.allNoteCategories.collectAsStateWithLifecycle(
+            initialValue = emptyList()
+        )
+
+        val showTagBottomSheet by noteViewModel.showTagBottomSheet.collectAsStateWithLifecycle()
+
+        // observe ui state changes
+        LaunchedEffect(key1 = noteUiState) {
+            when (noteUiState) {
+                is NoteViewModel.NoteUiState.AddNoteSuccess -> {
+                    onSaveClicked()
+                    noteViewModel.resetNoteUiState()
+                }
+
+                is NoteViewModel.NoteUiState.DeleteNoteSuccess -> {
+                    onDeleteNoteClicked()
+                    noteViewModel.resetNoteUiState()
+                }
+
+                else -> {
+                    // do nothing
+                }
+            }
+        }
 
         // top section
         NoteNav(
+            isNewNote = entryType == NoteConstants.NoteEntryTypes.NEW_NOTE,
             onBackClicked = onBackClicked,
-            onSaveClicked = onSaveClicked,
-            onDeleteNoteClicked = onDeleteNoteClicked
+            onSaveClicked = {
+                coroutineScope.launch {
+                    noteViewModel.saveNoteData(
+                        entryType = entryType
+                    )
+                }
+            },
+            onDeleteNoteClicked = {
+                coroutineScope.launch {
+                    noteViewModel.deleteNote()
+                }
+            }
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
-            var showTagBottomSheet by rememberSaveable {
-                mutableStateOf(false)
-            }
+
 
             NavBody(
                onLabelNoteClicked = {
-                   showTagBottomSheet = true
-               }
-
+                   noteViewModel.updateCategoryBottomSheetState(true)
+               },
+                noteViewModel = noteViewModel
             )
 
             if (showTagBottomSheet) {
-                // todo move to view model
-                val listOfTags by remember {
-                    mutableStateOf(listOf("Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School"))
-                }
+
                 TagBottomSheet(
-                    listOfTags = listOfTags,
+                    listOfTags = getCategories,
                     onDismissBottomSheetRequest = {
-                        showTagBottomSheet = false
+                        noteViewModel.updateCategoryBottomSheetState( false)
                     },
                     onTagClicked = {
                         tag ->
-                        showTagBottomSheet = false
+                        noteViewModel.updateNoteTag(tag.id)
+                        noteViewModel.updateCategoryBottomSheetState(false)
 
                     }
                 )
@@ -140,15 +181,13 @@ fun NotesScreen(
 @Composable
 fun NavBody(
     modifier: Modifier = Modifier,
-    onLabelNoteClicked: () -> Unit = {}
+    onLabelNoteClicked: () -> Unit = {},
+    noteViewModel: NoteViewModel
 ){
     Column(
         modifier = modifier
     ) {
-        // todo move to view model
-        var addNewTodo by remember {
-            mutableStateOf(false)
-        }
+
 
         val screenScrollState = rememberScrollState()
 
@@ -157,6 +196,12 @@ fun NavBody(
         val titleFocusRequester = remember { FocusRequester() }
 
         val bodyFocusRequester = remember { FocusRequester() }
+
+        val addNewTodo by noteViewModel.addNewTodo.collectAsStateWithLifecycle()
+        val note by noteViewModel.note.collectAsStateWithLifecycle()
+        val todos by noteViewModel.todos.collectAsStateWithLifecycle(
+            initialValue = emptyList()
+        )
 
         Column(
             modifier = Modifier
@@ -171,10 +216,10 @@ fun NavBody(
                 lastEditedInfo = "23rd of December 2024 at 22:00 PM"
             )
 
-            // todo move to view model
-            var title by remember {
-                mutableStateOf(TextFieldValue(""))
-            }
+            val title = TextFieldValue(
+                note?.noteTitle ?: "",
+                selection = TextRange((note?.noteTitle?.length ?: 0))
+            )
 
             // title section
             TitleSection(
@@ -185,8 +230,7 @@ fun NavBody(
                 noteTitle = title,
                 onNoteTitleChanged = { newValue ->
 
-                    val oldValue = title
-                    title = newValue
+                    noteViewModel.updateNoteTitle(newValue.text)
 
                     // scroll to bottom as title grows
 
@@ -194,7 +238,10 @@ fun NavBody(
                         // Adjust scroll only if the cursor moves outside the visible area
                         val cursorOffset = newValue.selection.start
                         val newCursorLine = calculateLineForOffset(newValue.text, cursorOffset)
-                        val oldCursorLine = calculateLineForOffset(oldValue.text, oldValue.selection.start)
+                        val oldCursorLine = calculateLineForOffset(
+                            title.text,
+                            title.selection.start
+                        )
 
                         if (newCursorLine != oldCursorLine) {
                             val scrollTarget = screenScrollState.value + (newCursorLine - oldCursorLine) * 110 // Adjust for line height
@@ -206,12 +253,10 @@ fun NavBody(
             )
 
 
-            // todo move to view model
-            var body by remember {
-                mutableStateOf(TextFieldValue(""))
-            }
-
-
+            val body = TextFieldValue(
+                note?.noteInfo ?: "",
+                selection = TextRange((note?.noteInfo?.length ?: 0))
+            )
 
             // body section
             BodySection(
@@ -221,8 +266,8 @@ fun NavBody(
                     .padding(horizontal = 16.dp),
                 noteBody = body,
                 onNoteBodyChanged = { newValue ->
-                    val oldValue = body
-                    body = newValue
+
+                    noteViewModel.updateNoteBody(newValue.text)
 
                     // scroll to bottom as body grows
 
@@ -230,7 +275,10 @@ fun NavBody(
                         // Adjust scroll only if the cursor moves outside the visible area
                         val cursorOffset = newValue.selection.start
                         val newCursorLine = calculateLineForOffset(newValue.text, cursorOffset)
-                        val oldCursorLine = calculateLineForOffset(oldValue.text, oldValue.selection.start)
+                        val oldCursorLine = calculateLineForOffset(
+                            body.text,
+                            body.selection.start
+                        )
 
                         if (newCursorLine != oldCursorLine) {
                             val scrollTarget = screenScrollState.value + (newCursorLine - oldCursorLine) * 50 // Adjust for line height
@@ -240,10 +288,7 @@ fun NavBody(
                 }
             )
 
-            // todo move to view model
-            var todoList by remember {
-                mutableStateOf(todos)
-            }
+
 
             // to-do section
             TodoSection(
@@ -251,24 +296,16 @@ fun NavBody(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 newTodo = addNewTodo,
-                todosList = todoList,
+                todosList = todos,
                 onNoteTodoItemClicked = { item ->
-                    todoList = todoList.map {
-                        if (it.id == item.id) {
-                            it.copy(
-                                isComplete = !it.isComplete
-                            )
-                        } else {
-                            it
-                        }
-                    }
+                    noteViewModel.modifyTodoCompletedState(item.id)
                 },
                 onDeleteTodoClicked = { item ->
-                    todoList = todoList.filterNot { it == item }
+                    noteViewModel.deleteTodo(item.id)
                 },
-                onAddNewTodoClicked = {
-                    todoList = todoList + NotesTodoItem("444","54",it,false)
-                    addNewTodo = false
+                onAddNewTodoClicked = { newTodo ->
+                    noteViewModel.addNewTodo(todo = newTodo)
+                    noteViewModel.updateAddNewTodoState()
                 }
 
             )
@@ -279,7 +316,7 @@ fun NavBody(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             onAddNewTodoClicked = {
-                addNewTodo = !addNewTodo
+                noteViewModel.updateAddNewTodoState()
             },
             onAttachFileClicked = {},
             onLabelNoteClicked = onLabelNoteClicked
@@ -472,9 +509,9 @@ fun BodySection(
 fun TodoSection(
     modifier: Modifier = Modifier,
     newTodo: Boolean = true,
-    todosList: List<NotesTodoItem> = emptyList(),
-    onNoteTodoItemClicked: (item: NotesTodoItem) -> Unit = {_ ->},
-    onDeleteTodoClicked: (item: NotesTodoItem) -> Unit = {_ ->},
+    todosList: List<NoteTodo> = emptyList(),
+    onNoteTodoItemClicked: (item: NoteTodo) -> Unit = {_ ->},
+    onDeleteTodoClicked: (item: NoteTodo) -> Unit = {_ ->},
     onAddNewTodoClicked: (newTodo: String) -> Unit
 ) {
 
@@ -555,10 +592,10 @@ fun NewTodoItemInputField(
 @Composable
 fun SingleNoteToDoItem(
     modifier: Modifier = Modifier,
-    todoInfo: NotesTodoItem,
+    todoInfo: NoteTodo,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    onNoteTodoItemClicked: (item: NotesTodoItem) -> Unit = {},
-    onDeleteTodoItemClicked: (item: NotesTodoItem) -> Unit = {}
+    onNoteTodoItemClicked: (item: NoteTodo) -> Unit = {},
+    onDeleteTodoItemClicked: (item: NoteTodo) -> Unit = {}
 ){
 
     Row(
@@ -568,7 +605,7 @@ fun SingleNoteToDoItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val iconToShow = if (todoInfo.isComplete)
+        val iconToShow = if (todoInfo.todoCompleted == 1)
             painterResource(
                 id = R.drawable.ic_check_circle
             )
@@ -597,10 +634,10 @@ fun SingleNoteToDoItem(
             )
 
             Text(
-                text = todoInfo.todo,
+                text = todoInfo.todo ?: "",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = contentColor,
-                    textDecoration = if (todoInfo.isComplete) TextDecoration.LineThrough else TextDecoration.None
+                    textDecoration = if (todoInfo.todoCompleted == 1) TextDecoration.LineThrough else TextDecoration.None
                 ),
             )
         }

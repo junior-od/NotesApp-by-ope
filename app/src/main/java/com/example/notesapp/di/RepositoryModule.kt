@@ -1,7 +1,11 @@
 package com.example.notesapp.di
 
+import com.example.notesapp.data.note.NoteRepo
+import com.example.notesapp.data.note.NoteRepository
 import com.example.notesapp.data.notecategory.NoteCategoryRepo
 import com.example.notesapp.data.notecategory.NoteCategoryRepository
+import com.example.notesapp.data.todos.NoteTodoRepo
+import com.example.notesapp.data.todos.NoteTodoRepository
 import com.example.notesapp.data.user.UserRepo
 import com.example.notesapp.data.user.UserRepository
 import org.koin.dsl.module
@@ -19,6 +23,16 @@ val repositoryModule = module {
     // provide a single instance of note category repository
     single<NoteCategoryRepo> {
         NoteCategoryRepository(get())
+    }
+
+    // provide a single instance of note repository
+    single<NoteRepo> {
+        NoteRepository(get())
+    }
+
+    // provide a single instance of note to-do repository
+    single<NoteTodoRepo> {
+        NoteTodoRepository(get())
     }
 
 }
