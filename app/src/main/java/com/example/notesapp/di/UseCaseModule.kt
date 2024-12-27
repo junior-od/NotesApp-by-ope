@@ -1,12 +1,22 @@
 package com.example.notesapp.di
 
+import com.example.notesapp.domain.note.CreateNoteUseCase
+import com.example.notesapp.domain.note.DeleteNoteUseCase
+import com.example.notesapp.domain.note.EditNoteUseCase
+import com.example.notesapp.domain.note.GetNoteUseCase
 import com.example.notesapp.domain.notecategory.CreateNoteCategoryUseCase
+import com.example.notesapp.domain.notecategory.GetAllNoteCategoryUseCase
+import com.example.notesapp.domain.todos.CreateNoteTodosUseCase
+import com.example.notesapp.domain.todos.EditNoteTodosUseCase
+import com.example.notesapp.domain.todos.UpdateNoteTodoUseCase
 import com.example.notesapp.domain.user.CreateUserUseCase
 import com.example.notesapp.domain.user.SignInUseCase
 import com.example.notesapp.domain.user.SignOutUseCase
 import com.example.notesapp.domain.user.SignUpUseCase
+import com.example.notesapp.domain.user.UserLoggedInIdUseCase
 import com.example.notesapp.domain.user.UserLoggedInUseCase
 import org.koin.dsl.module
+import kotlin.math.sin
 
 /**
  * this is the container to define how usecases dependencies are to be provided across the app
@@ -39,10 +49,74 @@ val useCaseModule  = module {
         SignOutUseCase(get())
     }
 
+    // provide a single instance of UserLoggedInId UseCase
+    single<UserLoggedInIdUseCase>{
+        UserLoggedInIdUseCase(get())
+    }
+
     // provide a single instance of CreateNoteCategory UseCase
     single<CreateNoteCategoryUseCase>{
         CreateNoteCategoryUseCase(
             get(), get()
+        )
+    }
+
+    // provide a single instance of GetAllNoteCategory UseCase
+    single<GetAllNoteCategoryUseCase> {
+        GetAllNoteCategoryUseCase(
+            get(),
+            get()
+        )
+    }
+
+    // provide a single instance of CreateNote UseCase
+    single<CreateNoteUseCase> {
+        CreateNoteUseCase(
+            get(),
+            get()
+        )
+    }
+
+    // provide a single instance of EditNote UseCase
+    single<EditNoteUseCase> {
+        EditNoteUseCase(
+            get()
+        )
+    }
+
+    // provide a single instance of DeleteNote UseCase
+    single<DeleteNoteUseCase> {
+        DeleteNoteUseCase(
+            get()
+        )
+    }
+
+    // provide a single instance of GetNote UseCase
+    single<GetNoteUseCase> {
+        GetNoteUseCase(
+            get()
+        )
+    }
+
+    // provide a single instance of CreateNoteTodos UseCase
+    single<CreateNoteTodosUseCase> {
+        CreateNoteTodosUseCase(
+            get(),
+            get()
+        )
+    }
+
+    // provide a single instance of EditNoteTodos UseCase
+    single<EditNoteTodosUseCase> {
+        EditNoteTodosUseCase(
+            get(), get()
+        )
+    }
+
+    // provide a single instance of UpdateNoteTodo UseCase
+    single<UpdateNoteTodoUseCase> {
+        UpdateNoteTodoUseCase(
+            get()
         )
     }
 }

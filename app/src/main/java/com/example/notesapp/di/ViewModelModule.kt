@@ -4,6 +4,7 @@ import com.example.notesapp.MainActivityViewModel
 import com.example.notesapp.ui.auth.signin.SignInViewModel
 import com.example.notesapp.ui.auth.signup.SignUpViewModel
 import com.example.notesapp.ui.home.HomeViewModel
+import com.example.notesapp.ui.note.NoteViewModel
 import com.example.notesapp.ui.notecategory.NoteCategoryViewModel
 import com.example.notesapp.ui.onboarding.OnboardingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -52,6 +53,17 @@ val viewModelModule = module {
     // provide a viewmodel instance of the note category view model
     viewModel {
         NoteCategoryViewModel(
+            get()
+        )
+    }
+
+    // provide a viewmodel instance of the note view model
+    viewModel {
+        NoteViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
             get()
         )
     }

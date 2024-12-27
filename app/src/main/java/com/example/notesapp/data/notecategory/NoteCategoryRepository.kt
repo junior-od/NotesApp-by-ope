@@ -1,5 +1,7 @@
 package com.example.notesapp.data.notecategory
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * note category repository to communicate with remote
  * server and local db to fetch
@@ -16,5 +18,14 @@ class NoteCategoryRepository(
      * */
     override suspend fun insertNoteCategory(noteCategory: NoteCategory) {
         return noteCategoryDao.insertNoteCategory(noteCategory)
+    }
+
+    /**
+     * get all categories
+     *
+     * @param userId expects user id that created the category
+     * */
+    override fun getAllNoteCategoriesByUserId(userId: String): Flow<List<NoteCategory>> {
+        return noteCategoryDao.getAllNoteCategoriesByUserId(userId)
     }
 }

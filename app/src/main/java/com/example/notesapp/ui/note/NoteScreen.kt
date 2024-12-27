@@ -55,7 +55,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
+import com.example.notesapp.data.constants.note.NoteConstants
 import com.example.notesapp.ui.components.EditInputField
 import com.example.notesapp.ui.components.NotesEditInputField
 import com.example.notesapp.ui.components.TagBottomSheet
@@ -67,6 +69,7 @@ import com.example.notesapp.ui.theme.NotesAppTheme
 import com.example.notesapp.ui.theme.calculateLineForOffset
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * composable components for the Note screen
@@ -80,10 +83,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun NotesScreen(
     modifier: Modifier = Modifier,
-    entryType: String = "",
+    entryType: NoteConstants.NoteEntryTypes = NoteConstants.NoteEntryTypes.NEW_NOTE,
+    noteId: String? = null,
     onBackClicked: () -> Unit = {},
     onSaveClicked: () -> Unit = {},
-    onDeleteNoteClicked: () -> Unit = {}
+    onDeleteNoteClicked: () -> Unit = {},
+    noteViewModel: NoteViewModel = koinViewModel()
 ){
 
     Column(
@@ -94,39 +99,45 @@ fun NotesScreen(
                 color = MaterialTheme.colorScheme.background
             )
     ) {
+        LaunchedEffect(key1 = Unit) {
+            noteViewModel.initializeNote()
+        }
+
+        val getCategories by noteViewModel.allNoteCategories.collectAsStateWithLifecycle(
+            initialValue = emptyList()
+        )
+
+        val showTagBottomSheet by noteViewModel.showTagBottomSheet.collectAsStateWithLifecycle()
+
 
         // top section
         NoteNav(
+            isNewNote = entryType == NoteConstants.NoteEntryTypes.NEW_NOTE,
             onBackClicked = onBackClicked,
             onSaveClicked = onSaveClicked,
             onDeleteNoteClicked = onDeleteNoteClicked
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
-            var showTagBottomSheet by rememberSaveable {
-                mutableStateOf(false)
-            }
+
 
             NavBody(
                onLabelNoteClicked = {
-                   showTagBottomSheet = true
-               }
-
+                   noteViewModel.updateCategoryBottomSheetState(true)
+               },
+                noteViewModel = noteViewModel
             )
 
             if (showTagBottomSheet) {
-                // todo move to view model
-                val listOfTags by remember {
-                    mutableStateOf(listOf("Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School","Work", "Home", "School"))
-                }
+
                 TagBottomSheet(
-                    listOfTags = listOfTags,
+                    listOfTags = getCategories,
                     onDismissBottomSheetRequest = {
-                        showTagBottomSheet = false
+                        noteViewModel.updateCategoryBottomSheetState( false)
                     },
                     onTagClicked = {
                         tag ->
-                        showTagBottomSheet = false
+                        noteViewModel.updateCategoryBottomSheetState(false)
 
                     }
                 )
@@ -140,7 +151,8 @@ fun NotesScreen(
 @Composable
 fun NavBody(
     modifier: Modifier = Modifier,
-    onLabelNoteClicked: () -> Unit = {}
+    onLabelNoteClicked: () -> Unit = {},
+    noteViewModel: NoteViewModel
 ){
     Column(
         modifier = modifier

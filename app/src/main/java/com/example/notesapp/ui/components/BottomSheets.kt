@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.notesapp.R
+import com.example.notesapp.data.notecategory.NoteCategory
 import com.example.notesapp.ui.theme.NotesAppTheme
 
 /**
@@ -42,10 +43,10 @@ import com.example.notesapp.ui.theme.NotesAppTheme
 @Composable
 fun TagBottomSheet(
     modifier: Modifier = Modifier,
-    listOfTags: List<String> = emptyList(),
+    listOfTags: List<NoteCategory> = emptyList(),
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismissBottomSheetRequest: () -> Unit = {},
-    onTagClicked: (tag: String) -> Unit = {}
+    onTagClicked: (tag: NoteCategory) -> Unit = {}
 ){
     ModalBottomSheet(
         modifier = modifier,
@@ -74,7 +75,7 @@ fun TagBottomSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        tag = item,
+                        tag = item.name ?: "",
                         onTagClicked = {
                             onTagClicked(item)
                         }
@@ -125,11 +126,9 @@ fun TagItem(
 @Composable
 private fun TagBottomSheetPreview(){
     NotesAppTheme {
-        val listOfTags by remember {
-            mutableStateOf(listOf("Work", "Home", "School"))
-        }
+
         TagBottomSheet(
-            listOfTags = listOfTags
+            listOfTags = emptyList()
         )
 
     }
