@@ -1,5 +1,7 @@
 package com.example.notesapp.data.note
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * note repository to communicate with remote
  * server and local db to fetch
@@ -16,5 +18,16 @@ class NoteRepository(
 
     override suspend fun getNoteById(id: String?): Note? {
         return noteDao.getNoteById(id)
+    }
+
+    /**
+     * get notes with todos
+     *
+     * @param userId user id that created the notes
+     * */
+    override fun getNotesWithTodosByUserId(userId: String?): Flow<List<NoteWithTodosModel>> {
+        return noteDao.getNotesWithTodosByUserId(
+            userId = userId
+        )
     }
 }

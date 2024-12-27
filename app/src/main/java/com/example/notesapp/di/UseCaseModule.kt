@@ -4,10 +4,12 @@ import com.example.notesapp.domain.note.CreateNoteUseCase
 import com.example.notesapp.domain.note.DeleteNoteUseCase
 import com.example.notesapp.domain.note.EditNoteUseCase
 import com.example.notesapp.domain.note.GetNoteUseCase
+import com.example.notesapp.domain.note.GetNotesWithTodosUseCase
 import com.example.notesapp.domain.notecategory.CreateNoteCategoryUseCase
 import com.example.notesapp.domain.notecategory.GetAllNoteCategoryUseCase
 import com.example.notesapp.domain.todos.CreateNoteTodosUseCase
 import com.example.notesapp.domain.todos.EditNoteTodosUseCase
+import com.example.notesapp.domain.todos.GetTodosByNoteIdUseCase
 import com.example.notesapp.domain.todos.UpdateNoteTodoUseCase
 import com.example.notesapp.domain.user.CreateUserUseCase
 import com.example.notesapp.domain.user.SignInUseCase
@@ -116,6 +118,21 @@ val useCaseModule  = module {
     // provide a single instance of UpdateNoteTodo UseCase
     single<UpdateNoteTodoUseCase> {
         UpdateNoteTodoUseCase(
+            get()
+        )
+    }
+
+    // provide a single instance of GetTodosByNoteId UseCase
+    single<GetTodosByNoteIdUseCase>{
+        GetTodosByNoteIdUseCase(
+            get()
+        )
+    }
+
+    // provide a single of GetNotesWithTodos UseCase
+    single<GetNotesWithTodosUseCase> {
+        GetNotesWithTodosUseCase(
+            get(),
             get()
         )
     }

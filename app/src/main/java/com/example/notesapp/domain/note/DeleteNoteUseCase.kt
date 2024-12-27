@@ -15,14 +15,16 @@ class DeleteNoteUseCase(
      * @param note expects note record
      * */
     suspend operator fun invoke(
-        note: Note
+        note: Note?
     ){
-        val updateNote = note.copy(
-            deleteFlag = 0,
-            updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
-            syncFlag = 0
-        )
+        note?.let {
+            val updateNote = note.copy(
+                deleteFlag = 1,
+                updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
+                syncFlag = 0
+            )
 
-        noteRepo.insertNote(updateNote)
+            noteRepo.insertNote(updateNote)
+        }
     }
 }

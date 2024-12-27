@@ -17,4 +17,13 @@ class NoteTodoRepository(
     override suspend fun insertNoteTodos(noteTodos: List<NoteTodo>) {
         noteTodoDao.insertNoteTodos(noteTodos)
     }
+
+    /***
+     * get todos by note id
+     *
+     * @param noteId expects note id
+     */
+    override suspend fun getTodosByNoteId(noteId: String?): List<NoteTodo> {
+        return noteTodoDao.getTodosByNoteId(noteId)
+    }
 }

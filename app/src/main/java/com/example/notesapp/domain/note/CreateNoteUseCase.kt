@@ -20,16 +20,18 @@ class CreateNoteUseCase(
      * @param note expects note record
      * */
     suspend operator fun invoke(
-        note: Note
+        note: Note?
     ){
 
-        val updateNote = note.copy(
-            createdBy = userRepo.getSignedInUserId(),
-            createdAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
-            updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat()
-        )
+        note?.let {
+            val updateNote = note.copy(
+                createdBy = userRepo.getSignedInUserId(),
+                createdAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
+                updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat()
+            )
 
-        noteRepo.insertNote(updateNote)
+            noteRepo.insertNote(updateNote)
+        }
 
     }
 

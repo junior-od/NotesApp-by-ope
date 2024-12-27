@@ -1,8 +1,12 @@
 package com.example.notesapp.data.note
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
+import com.example.notesapp.data.todos.NoteTodo
+import com.example.notesapp.data.todos.NoteTodoTable
 
 /**
  * Note Entity or table
@@ -64,3 +68,13 @@ object NoteTable {
     const val UPDATED_AT = "updated_at"
     const val SYNC_FLAG = "sync_flag"
 }
+
+data class NoteWithTodosModel(
+    @Embedded val note: Note,
+    @Relation(
+        parentColumn = NoteTable.ID,
+        entityColumn = NoteTodoTable.NOTE_ID,
+        entity = NoteTodo::class
+    )
+    val todos: List<NoteTodo>
+)

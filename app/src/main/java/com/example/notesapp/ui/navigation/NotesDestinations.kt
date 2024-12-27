@@ -1,6 +1,7 @@
 package com.example.notesapp.ui.navigation
 
 import com.example.notesapp.R
+import com.example.notesapp.data.constants.note.NoteConstants
 import kotlinx.serialization.Serializable
 
 
@@ -53,7 +54,10 @@ sealed class NotesDestinations: NotesDestinationsInfo {
 
     /** Note screen pointer */
     @Serializable
-    data object Note: NotesDestinations() {
+    data class Note(
+        val noteId: String? = null,
+        val entryType: NoteConstants.NoteEntryTypes = NoteConstants.NoteEntryTypes.NEW_NOTE
+    ): NotesDestinations() {
         override val title: Int
             get() = R.string.note_screen
     }

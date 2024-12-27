@@ -6,6 +6,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.example.notesapp.data.constants.note.NoteConstants
 import com.example.notesapp.ui.auth.signin.SignInScreen
 import com.example.notesapp.ui.auth.signup.SignUpScreen
 import com.example.notesapp.ui.home.HomeScreen
@@ -70,13 +72,19 @@ fun NotesNavHost(
                     navHostController.popToScreen(NotesDestinations.Onboarding)
                 },
                 onNoteItemClicked = {
-                    navHostController.goToScreen(NotesDestinations.Note)
+                    item ->
+                    navHostController.goToScreen(
+                        NotesDestinations.Note(
+                            noteId = item.id,
+                            entryType = NoteConstants.NoteEntryTypes.EDIT_NOTE
+                        )
+                    )
                 },
                 onAddNewCategoryClicked = {
                     navHostController.goToScreen(NotesDestinations.NoteCategory)
                 },
                 onNewNoteClicked = {
-                    navHostController.goToScreen(NotesDestinations.Note)
+                    navHostController.goToScreen(NotesDestinations.Note())
                 }
             )
         }
@@ -91,7 +99,11 @@ fun NotesNavHost(
             )
         }
         composable<NotesDestinations.Note> {
+                navEntry ->
+            val notePassedData = navEntry.toRoute<NotesDestinations.Note>()
             NotesScreen(
+                noteId = notePassedData.noteId,
+                entryType = notePassedData.entryType,
                 onBackClicked = {
                     navHostController.navigateUp()
                 },

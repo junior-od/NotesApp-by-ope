@@ -16,13 +16,15 @@ class EditNoteUseCase(
      * @param note expects note record
      * */
     suspend operator fun invoke(
-        note: Note
+        note: Note?
     ){
-        val updateNote = note.copy(
-            updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
-            syncFlag = 0
-        )
+        note?.let {
+            val updateNote = note.copy(
+                updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
+                syncFlag = 0
+            )
 
-        noteRepo.insertNote(updateNote)
+            noteRepo.insertNote(updateNote)
+        }
     }
 }

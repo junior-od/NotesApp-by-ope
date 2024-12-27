@@ -52,6 +52,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
+import com.example.notesapp.data.note.Note
+import com.example.notesapp.data.note.NoteWithTodosModel
+import com.example.notesapp.data.todos.NoteTodo
 import com.example.notesapp.ui.components.EditInputFieldWitTrailingIcon
 import com.example.notesapp.ui.components.TopNavBarWithScreenTitledIcon
 import com.example.notesapp.ui.theme.NotesAppTheme
@@ -67,7 +70,7 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onLogOutClicked: () -> Unit = {},
-    onNoteItemClicked: (item: NotesItem) -> Unit = {_ -> },
+    onNoteItemClicked: (item: Note) -> Unit = {_ -> },
     onNewNoteClicked: () -> Unit = { },
     onAddNewCategoryClicked: () -> Unit = {},
     homeViewModel: HomeViewModel = koinViewModel()
@@ -144,17 +147,23 @@ fun HomeScreen(
             onAddCategoryClicked = onAddNewCategoryClicked
         )
 
-        // todo move to view model
-        val notesss by remember {
-            mutableStateOf(notes)
-        }
+
+        val allNotes by homeViewModel.allNotes.collectAsStateWithLifecycle(initialValue = emptyList())
         // staggered notes
         NotesStaggeredList(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            notesList = notesss,
-            onNotesItemClicked = onNoteItemClicked
+            notesList = allNotes,
+            onNotesItemClicked = onNoteItemClicked,
+            onTodoItemClicked = {
+                todo ->
+                coroutineScope.launch {
+                    homeViewModel.updateTodo(
+                        todo = todo
+                    )
+                }
+            }
         )
     }
 }
@@ -384,9 +393,9 @@ fun AddCategoryChip(
 @Composable
 fun NotesStaggeredList(
     modifier: Modifier = Modifier,
-    notesList: List<NotesItem> = emptyList(),
-    onNotesItemClicked: (item: NotesItem) -> Unit = {_ ->},
-    onTodoItemClicked: (todoItem: NotesTodoItem) -> Unit = {_ -> }
+    notesList: List<NoteWithTodosModel> = emptyList(),
+    onNotesItemClicked: (item: Note) -> Unit = { _ ->},
+    onTodoItemClicked: (todoItem: NoteTodo) -> Unit = {_ -> }
 ){
 
     LazyVerticalStaggeredGrid(
@@ -399,15 +408,16 @@ fun NotesStaggeredList(
         items(
             notesList,
             key = {
-                it.id
+                it.note.id
             }
         ) {
             NotesSubItem(
                 modifier = Modifier,
                 item = it,
                 onNoteItemClicked = {
-                    onNotesItemClicked(it)
-                }
+                    onNotesItemClicked(it.note)
+                },
+                onNoteTodoItemClicked = onTodoItemClicked
             )
 
         }
@@ -424,9 +434,9 @@ fun NotesStaggeredList(
 @Composable
 fun NotesSubItem(
     modifier: Modifier = Modifier,
-    item: NotesItem,
+    item: NoteWithTodosModel,
     onNoteItemClicked: () -> Unit,
-    onNoteTodoItemClicked: (item: NotesTodoItem) -> Unit = {_ ->},
+    onNoteTodoItemClicked: (item: NoteTodo) -> Unit = {_ ->},
 ){
 
 
@@ -466,7 +476,7 @@ fun NotesSubItem(
 
             // set title and note body
             Text(
-                text = item.title,
+                text = item.note.noteTitle ?: "",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     color = contentColor
@@ -478,17 +488,18 @@ fun NotesSubItem(
             )
 
             Text(
-                text = item.notes,
+                text = item.note.noteInfo ?: "",
                 style = MaterialTheme.typography.bodySmall.copy(
                     color = contentColor
                 )
             )
 
             // display TO-DO if note contains todos
-            // todo migrate properly later
-            if (item.noteType.equals("todo")) {
 
-                val getTodos = todos.filter { it.noteItemId == item.id }
+            if (item.todos.isNotEmpty()) {
+
+                // display the todos not deleted in the note item
+                val getTodos = item.todos.filter { it.deleteFlag == 0 }
                 getTodos.forEach{
                     NotesTodoSubItem(
                         modifier = Modifier,
@@ -513,8 +524,8 @@ fun NotesSubItem(
 fun NotesTodoSubItem(
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.background,
-    item: NotesTodoItem,
-    onNoteTodoItemClicked: (item: NotesTodoItem) -> Unit = {_ ->},
+    item: NoteTodo,
+    onNoteTodoItemClicked: (item: NoteTodo) -> Unit = {_ ->},
 ){
     Row(
         modifier = modifier
@@ -527,7 +538,7 @@ fun NotesTodoSubItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val iconToShow = if (item.isComplete)
+        val iconToShow = if (item.todoCompleted == 1)
                          painterResource(
                              id = R.drawable.ic_check_circle
                          )
@@ -545,11 +556,11 @@ fun NotesTodoSubItem(
         )
 
         Text(
-            text = item.todo,
+            text = item.todo ?: "",
             style = MaterialTheme.typography.bodySmall.copy(
                 color = contentColor,
                 fontWeight = FontWeight.Bold,
-                textDecoration = if (item.isComplete) TextDecoration.LineThrough else TextDecoration.None
+                textDecoration = if (item.todoCompleted == 1) TextDecoration.LineThrough else TextDecoration.None
             ),
             maxLines = 1,
 
@@ -575,70 +586,3 @@ private fun HomeScreenPreview(){
         HomeScreen()
     }
 }
-
-//todo remove this later
-data class NotesItem(
-    val id: String,
-    val title: String,
-    val notes: String,
-    val noteType: String
-)
-
-//todo remove this later
-data class NotesTodoItem(
-    val id: String,
-    val noteItemId: String,
-    val todo: String,
-    val isComplete: Boolean
-)
-
-//todo remove this later
-val notes = listOf(
-    NotesItem(
-        id = "1",
-        title = "Lazy Staggerd grids",
-        notes = "Now that we have the LazyVerticalStaggeredGrid in place, we’re next going to compose the items inside of the grid. For this we’ll use the items function from the LazyStaggeredGridScope, passing the function the list of GridItem references that were passed to the composable function. We’ll then use this reference to compose an Item for each of the cells within our grid.",
-        noteType = "note"
-    ),
-    NotesItem(
-        id = "2",
-        title = "My Todo Today",
-        notes = "ffd",
-        noteType = "todo"
-    ),
-    NotesItem(
-        id = "3",
-        title = "My Todo Today bnbn uuu",
-        notes = "ffd  we have the LazyV gg gjhg gjgj gjhghjg jhg j jghjerticalStaggeredGrid in p",
-        noteType = "todo"
-    ),
-
-)
-
-//todo remove this later
-val todos = listOf(
-    NotesTodoItem(
-        id = "1",
-        noteItemId = "2",
-        todo = "Play football",
-        isComplete = true
-    ),
-    NotesTodoItem(
-        id = "2",
-        noteItemId = "2",
-        todo = "Play basketball",
-        isComplete = false
-    ),
-    NotesTodoItem(
-        id = "3",
-        noteItemId = "2",
-        todo = "Go Swimming",
-        isComplete = true
-    ),
-    NotesTodoItem(
-        id = "4",
-        noteItemId = "3",
-        todo = "Go to the meeting",
-        isComplete = true
-    )
-)

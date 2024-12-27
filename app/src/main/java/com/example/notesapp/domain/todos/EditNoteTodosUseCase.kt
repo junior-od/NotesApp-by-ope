@@ -21,16 +21,18 @@ class EditNoteTodosUseCase(
         noteTodos: List<NoteTodo>,
         noteId: String,
     ){
-        val updatedTodos = noteTodos.map {
-            it.copy(
-                noteId = it.noteId?.ifEmpty { noteId },
-                createdBy = it.createdBy?.ifEmpty { userRepo.getSignedInUserId() },
-                createdAt = it.createdAt?.ifEmpty { DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat() },
-                updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
-                syncFlag = 0
-            )
-        }
+        if (noteTodos.isNotEmpty()){
+            val updatedTodos = noteTodos.map {
+                it.copy(
+                    noteId = if(it.noteId == null) noteId else it.noteId,
+                    createdBy = if(it.createdBy == null) userRepo.getSignedInUserId() else it.createdBy,
+                    createdAt = if(it.createdAt == null) DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat() else it.createdAt,
+                    updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
+                    syncFlag = 0
+                )
+            }
 
-        noteTodoRepo.insertNoteTodos(updatedTodos)
+            noteTodoRepo.insertNoteTodos(updatedTodos)
+        }
     }
 }

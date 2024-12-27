@@ -25,16 +25,17 @@ class CreateNoteTodosUseCase(
         noteId: String,
     ){
 
-        val updatedTodos = noteTodos.map {
-            it.copy(
-                noteId = noteId,
-                createdBy = userRepo.getSignedInUserId(),
-                createdAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
-                updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat()
-            )
+        if (noteTodos.isNotEmpty()){
+            val updatedTodos = noteTodos.map {
+                it.copy(
+                    noteId = noteId,
+                    createdBy = userRepo.getSignedInUserId(),
+                    createdAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat(),
+                    updatedAt = DateTimeUtils.getCurrentDateTimeInFullDateTimeFormat()
+                )
+            }
+
+            noteTodoRepo.insertNoteTodos(updatedTodos)
         }
-
-        noteTodoRepo.insertNoteTodos(updatedTodos)
-
     }
 }
