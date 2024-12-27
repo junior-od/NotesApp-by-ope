@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.notesapp.R
 import com.example.notesapp.data.note.Note
 import com.example.notesapp.data.note.NoteWithTodosModel
+import com.example.notesapp.data.notecategory.NoteCategory
 import com.example.notesapp.data.todos.NoteTodo
 import com.example.notesapp.ui.components.EditInputFieldWitTrailingIcon
 import com.example.notesapp.ui.components.TopNavBarWithScreenTitledIcon
@@ -106,10 +108,8 @@ fun HomeScreen(
             onNewNoteClicked = onNewNoteClicked
         )
 
-        // todo move to viewmodel
-        var findNote by remember {
-            mutableStateOf("")
-        }
+
+        val findNote by homeViewModel.findNote.collectAsStateWithLifecycle()
 
         // find notes
         SearchBar(
@@ -118,31 +118,29 @@ fun HomeScreen(
                 .padding(16.dp),
             findNote = findNote,
             onFindNoteChange = {
-                findNote = it
+                homeViewModel.updateFindNote(it)
             },
             onCloseSearchClicked = {
-                findNote = ""
+                homeViewModel.updateFindNote("")
             }
         )
 
-        // todo move to viewmodel
-        var selectedCategoryName by remember {
-            mutableStateOf("All")
-        }
-
-        // todo move to viewmodel
-        val categoryNames by remember {
-            mutableStateOf(listOf("All", "Work", "Important"))
-        }
+       
+        val selectedCategoryId by homeViewModel.selectedCategoryId.collectAsStateWithLifecycle()
+        val categoryNames by homeViewModel.allNoteCategories.collectAsStateWithLifecycle(
+            initialValue = emptyList()
+        )
+        
         // category sections
         CategoriesSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
+            defaultCategory = homeViewModel.defaultNoteCategory,
             listOfCategories = categoryNames,
-            selectedCategoryName = selectedCategoryName,
+            selectedCategoryId = selectedCategoryId,
             onCategoryClicked = {
-                selectedCategoryName = it
+               homeViewModel.updateSelectedCategoryId(it)
             },
             onAddCategoryClicked = onAddNewCategoryClicked
         )
@@ -256,7 +254,8 @@ fun SearchBar(
 /**
  * Categories sections
  *
- * @param selectedCategoryName expects category name selected from the category list displayed
+ * @param selectedCategoryId expects category id selected from the category list displayed
+ * @param defaultCategory expects default category to be displayed
  * @param listOfCategories expects a list of categries to be displayed
  * @param onCategoryClicked triggers function when the category is clicked
  * */
@@ -264,19 +263,27 @@ fun SearchBar(
 @Composable
 fun CategoriesSection(
     modifier: Modifier = Modifier,
-    selectedCategoryName: String = "",
-    listOfCategories: List<String> = emptyList(),
-    onCategoryClicked: (categoryName: String) -> Unit = {_ ->},
+    selectedCategoryId: String = "",
+    defaultCategory: NoteCategory,
+    listOfCategories: List<NoteCategory> = emptyList(),
+    onCategoryClicked: (categoryId: String) -> Unit = {_ ->},
     onAddCategoryClicked: () -> Unit = {}
 ){
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // set default category
+        SingleCategory(
+            categoryName = defaultCategory,
+            isCategorySelected = selectedCategoryId == defaultCategory.id,
+            onCategoryClicked = onCategoryClicked
+        )
+        // set user custom categories
         listOfCategories.forEach {
             SingleCategory(
                 categoryName = it,
-                isCategorySelected = selectedCategoryName == it,
+                isCategorySelected = selectedCategoryId == it.id,
                 onCategoryClicked = onCategoryClicked
             )
         }
@@ -299,7 +306,7 @@ fun CategoriesSection(
 @Composable
 fun SingleCategory(
     modifier: Modifier = Modifier,
-    categoryName: String = "",
+    categoryName: NoteCategory,
     isCategorySelected: Boolean = false,
     onCategoryClicked: (categoryName: String) -> Unit = {_ ->}
 ){
@@ -316,7 +323,7 @@ fun SingleCategory(
 
     ElevatedSuggestionChip(
         modifier = modifier,
-        onClick = { onCategoryClicked(categoryName) },
+        onClick = { onCategoryClicked(categoryName.id) },
         elevation = ChipElevation(
             elevation =  if(isCategorySelected) 5.dp else 0.dp,
             pressedElevation = if(isCategorySelected) 5.dp else 0.dp,
@@ -331,7 +338,7 @@ fun SingleCategory(
         ),
         label = {
            Text(
-               text = stringResource(R.string.hashtag_category, categoryName),
+               text = stringResource(R.string.hashtag_category, (categoryName.name ?: "").uppercase()),
                style = MaterialTheme.typography.labelLarge.copy(
                    fontWeight = FontWeight.Bold
                )

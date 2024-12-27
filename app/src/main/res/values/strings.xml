@@ -18,7 +18,7 @@
     <string name="log_out_icon">Log out Icon</string>
     <string name="icon">%1$s icon</string>
     <string name="hashtag_category">#%1$s</string>
-    <string name="search_for_note">Search for note ...</string>
+    <string name="search_for_note">Search for note title …</string>
     <string name="add_category_icon">Add Category Icon</string>
     <string name="todo_status_icon">todo status icon</string>
     <string name="app_logo">app logo</string>

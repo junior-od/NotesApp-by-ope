@@ -24,10 +24,34 @@ class NoteRepository(
      * get notes with todos
      *
      * @param userId user id that created the notes
+     * @param search expects search data
      * */
-    override fun getNotesWithTodosByUserId(userId: String?): Flow<List<NoteWithTodosModel>> {
+    override fun getNotesWithTodosByUserId(
+        userId: String?,
+        search: String
+    ): Flow<List<NoteWithTodosModel>> {
         return noteDao.getNotesWithTodosByUserId(
-            userId = userId
+            userId = userId,
+            search = search
+        )
+    }
+
+    /**
+     * get notes with todos by user id and category id
+     *
+     * @param userId user id that created the notes
+     * @param search expects search data
+     * @param categoryId expects note category id
+     * */
+    override fun getNotesWithTodosByUserIdAndCategoryId(
+        userId: String?,
+        search: String,
+        categoryId: String
+    ): Flow<List<NoteWithTodosModel>> {
+        return noteDao.getNotesWithTodosByUserIdAndCategoryId(
+            userId = userId,
+            search = search,
+            categoryId = categoryId
         )
     }
 }
