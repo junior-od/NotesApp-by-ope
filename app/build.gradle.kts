@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.io.koin.core)
     implementation(libs.io.koin.android)
     implementation(libs.io.koin.android.compose)
+    implementation(libs.io.koin.android.workmanager)
 
     // compose navigation
     implementation(libs.androidx.navigation.compose)

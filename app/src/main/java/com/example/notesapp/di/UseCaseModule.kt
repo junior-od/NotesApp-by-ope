@@ -18,6 +18,7 @@ import com.example.notesapp.domain.user.SignUpUseCase
 import com.example.notesapp.domain.user.UserLoggedInIdUseCase
 import com.example.notesapp.domain.user.UserLoggedInUseCase
 import com.example.notesapp.domain.util.FormatFullDateTimeUseCase
+import com.example.notesapp.domain.workers.SyncDataUseCase
 import org.koin.dsl.module
 import kotlin.math.sin
 
@@ -141,5 +142,12 @@ val useCaseModule  = module {
     // provide a single instance of FormatFullDateTimeUseCase
     single<FormatFullDateTimeUseCase>{
         FormatFullDateTimeUseCase()
+    }
+
+    // provide a single instance of SyncDataUseCase
+    single<SyncDataUseCase>{
+        SyncDataUseCase(
+            get()
+        )
     }
 }

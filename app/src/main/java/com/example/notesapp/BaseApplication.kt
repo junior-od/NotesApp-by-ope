@@ -5,6 +5,7 @@ import com.example.notesapp.data.db.NotesDatabase
 import com.example.notesapp.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 
 class BaseApplication: Application() {
@@ -16,9 +17,14 @@ class BaseApplication: Application() {
         startKoin {
             androidLogger()
             androidContext(this@BaseApplication)
+
             modules(
                 appModule
             ) // Register your DI modules
+            // setup a WorkManager instance
+            workManagerFactory()
         }
+
+
     }
 }

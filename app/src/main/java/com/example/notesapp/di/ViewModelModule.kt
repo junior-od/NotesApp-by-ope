@@ -39,6 +39,7 @@ val viewModelModule = module {
     // provide a viewmodel instance of main activity viewmodel
     viewModel {
         MainActivityViewModel(
+            get(),
             get()
         )
     }
