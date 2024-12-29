@@ -74,6 +74,7 @@ dependencies {
     // room library
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.core.ktx)
     kapt(libs.androidx.room.compiler)
 
     // koin library
@@ -113,10 +114,30 @@ dependencies {
 
 
     testImplementation(libs.junit)
+
+    //truth test
+    testImplementation(libs.truth)
+    androidTestImplementation(libs.truth)
+
+    // room test
+    androidTestImplementation(libs.androidx.room.testing)
+
+    // coroutine test
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    // arch core test
+    testImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.androidx.core.testing)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // mockito
+    androidTestImplementation(libs.mockito.android)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
