@@ -7,6 +7,8 @@ interface UserRepo {
 
     suspend fun insertUser(user: User)
 
+    suspend fun insertUsers(user: List<User>)
+
     fun signedInUser(): Flow<User?>
 
     fun getSignedInUserId(): String
@@ -44,4 +46,6 @@ interface UserRepo {
             isSuccessFul: Boolean
         ) -> Unit
     )
+
+    suspend fun getAllUsersDataToUpload(): List<User>
 }

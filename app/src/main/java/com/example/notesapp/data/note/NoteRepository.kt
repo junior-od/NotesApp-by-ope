@@ -54,4 +54,11 @@ class NoteRepository(
             categoryId = categoryId
         )
     }
+
+    /**
+     * get all notes to be uploaded
+     * */
+    override suspend fun getAllNotesToUpload(): List<Note> {
+        return noteDao.getAllNotesToUpload()
+    }
 }

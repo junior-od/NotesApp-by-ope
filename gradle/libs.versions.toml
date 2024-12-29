@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.0"
+guava = "33.0.0-android"
 kotlin = "1.9.0"
 coreKtx = "1.13.0"
 junit = "4.13"
@@ -23,6 +24,7 @@ googleId = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -51,6 +53,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx" , name = "kotlinx
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx" , name = "kotlinx-coroutines-core" , version.ref = "kotlinCoroutine" }
 google-firebase-bom = { group = "com.google.firebase" , name = "firebase-bom" , version.ref = "firebaseBom" }
 google-firebase-auth = { group = "com.google.firebase" , name = "firebase-auth"}
+google-firbasestore = { group = "com.google.firebase" , name = "firebase-firestore"}
 androidx-lifecycle-compose = { group = "androidx.lifecycle" , name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
 google-play-auth = { group = "com.google.android.gms" , name = "play-services-auth" , version.ref = "googlePlayServicesAuth" }
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials"}

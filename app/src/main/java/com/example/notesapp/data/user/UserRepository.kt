@@ -3,7 +3,9 @@ package com.example.notesapp.data.user
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 /**
  * user repository to communicate with remote
@@ -17,6 +19,12 @@ class UserRepository(
 ): UserRepo {
     override suspend fun insertUser(user: User) {
         userDao.insertUser(user)
+    }
+
+    override suspend fun insertUsers(user: List<User>) {
+        withContext(Dispatchers.IO){
+            userDao.insertUsers(user)
+        }
     }
 
     override fun signedInUser(): Flow<User?> {
@@ -127,5 +135,12 @@ class UserRepository(
                 )
             }
         }
+    }
+
+    /**
+     * get all users to upload
+     * */
+    override suspend fun getAllUsersDataToUpload(): List<User> {
+        return userDao.getAllUsersDataToUpload()
     }
 }

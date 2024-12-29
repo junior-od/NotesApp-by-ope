@@ -80,7 +80,11 @@ dependencies {
     implementation(libs.io.koin.core)
     implementation(libs.io.koin.android)
     implementation(libs.io.koin.android.compose)
-    implementation(libs.io.koin.android.workmanager)
+    implementation(libs.io.koin.android.workmanager){
+        exclude(group = "com.google.guava")
+    }
+
+   implementation(libs.guava)
 
     // compose navigation
     implementation(libs.androidx.navigation.compose)
@@ -93,6 +97,10 @@ dependencies {
     // firebase dependencies
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.auth)
+    implementation(libs.google.firbasestore){
+        exclude(group = "com.google.guava")
+    }
+
 
     // compose lifecycle runtime
     implementation(libs.androidx.lifecycle.compose)

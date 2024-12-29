@@ -1,7 +1,6 @@
 package com.example.notesapp.data.workers.autosync
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkInfo
 import androidx.work.WorkManager

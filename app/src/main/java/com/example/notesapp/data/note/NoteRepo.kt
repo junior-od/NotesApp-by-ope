@@ -17,4 +17,6 @@ interface NoteRepo {
         search: String,
         categoryId: String
     ): Flow<List<NoteWithTodosModel>>
+
+    suspend fun getAllNotesToUpload(): List<Note>
 }

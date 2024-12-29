@@ -26,4 +26,11 @@ class NoteTodoRepository(
     override suspend fun getTodosByNoteId(noteId: String?): List<NoteTodo> {
         return noteTodoDao.getTodosByNoteId(noteId)
     }
+
+    /**
+     * get all note todos to be uploaded
+     * */
+    override suspend fun getAllNoteTodoToUpload(): List<NoteTodo> {
+        return noteTodoDao.getAllNoteTodoToUpload()
+    }
 }

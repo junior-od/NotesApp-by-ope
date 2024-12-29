@@ -28,4 +28,11 @@ class NoteCategoryRepository(
     override fun getAllNoteCategoriesByUserId(userId: String): Flow<List<NoteCategory>> {
         return noteCategoryDao.getAllNoteCategoriesByUserId(userId)
     }
+
+    /**
+     * get all note category to be uploaded
+     * */
+    override suspend fun getAllNoteCategoryToUpload(): List<NoteCategory> {
+        return noteCategoryDao.getAllNoteCategoryToUpload()
+    }
 }
