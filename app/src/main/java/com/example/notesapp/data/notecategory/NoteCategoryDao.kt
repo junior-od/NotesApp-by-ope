@@ -33,4 +33,12 @@ interface NoteCategoryDao {
         userId: String?
     ): Flow<List<NoteCategory>>
 
+    /**
+     * get all note category to be uploaded
+     * */
+    @Query(
+        "SELECT * FROM ${NoteCategoryTable.TABLE_NAME} WHERE ${NoteCategoryTable.SYNC_FLAG} = 0"
+    )
+    suspend fun getAllNoteCategoryToUpload(): List<NoteCategory>
+
 }

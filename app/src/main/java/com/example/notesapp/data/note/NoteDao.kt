@@ -69,4 +69,12 @@ interface NoteDao {
         search: String,
         categoryId: String
     ): Flow<List<NoteWithTodosModel>>
+
+    /**
+     * get all notes to be uploaded
+     * */
+    @Query(
+        "SELECT * FROM ${NoteTable.TABLE_NAME} WHERE ${NoteTable.SYNC_FLAG} = 0"
+    )
+    suspend fun getAllNotesToUpload(): List<Note>
 }

@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.notesapp.data.notecategory.NoteCategory
+import com.example.notesapp.data.notecategory.NoteCategoryTable
 
 
 /**
@@ -28,4 +30,12 @@ interface NoteTodoDao {
         "WHERE ${NoteTodoTable.NOTE_ID} = :noteId"
     )
     suspend fun getTodosByNoteId(noteId: String?): List<NoteTodo>
+
+    /**
+     * get all note todos to be uploaded
+     * */
+    @Query(
+        "SELECT * FROM ${NoteTodoTable.TABLE_NAME} WHERE ${NoteTodoTable.SYNC_FLAG} = 0"
+    )
+    suspend fun getAllNoteTodoToUpload(): List<NoteTodo>
 }
