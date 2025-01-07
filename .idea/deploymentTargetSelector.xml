@@ -13,10 +13,16 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="testInsertNote_Returns_True()">
+      <SelectionState runConfigName="NoteDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="NoteDaoTest">
+      <SelectionState runConfigName="testGetNoteById_Returns_Null()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testGetNoteById_Returns_Note()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testGetNotesWithTodosByUserId_Returns_NotesCreatedByUserIdOnly()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

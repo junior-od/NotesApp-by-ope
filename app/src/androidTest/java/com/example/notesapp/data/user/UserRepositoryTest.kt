@@ -2,17 +2,20 @@ package com.example.notesapp.data.user
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
+import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.notesapp.data.db.NotesDatabase
-import com.example.notesapp.data.todos.NoteTodo
 import com.google.common.truth.Truth
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.mock
 
-class UserDaoTest{
+@SmallTest
+class UserRepositoryTest{
     //rule basically to allow tasks(coroutine tasks) to be run synchronously
     // and immediately on same thread, to observe and get immediate results
     @get:Rule
@@ -20,6 +23,8 @@ class UserDaoTest{
 
     private lateinit var notesDatabase: NotesDatabase
     private lateinit var userDao: UserDao
+    private lateinit var userRepo: UserRepo
+    private lateinit var firebaseAuth: FirebaseAuth
 
     @Before
     fun setUp() {
@@ -32,7 +37,12 @@ class UserDaoTest{
             NotesDatabase::class.java
         ).allowMainThreadQueries().build()
 
-       userDao = notesDatabase.userDao()
+        userDao = notesDatabase.userDao()
+        firebaseAuth = mock(FirebaseAuth::class.java)
+        userRepo = UserRepository(
+            userDao,
+            firebaseAuth
+        )
     }
 
     @After
@@ -50,9 +60,9 @@ class UserDaoTest{
             syncFlag = 0
         )
 
-        userDao.insertUser(note)
+        userRepo.insertUser(note)
 
-        val getNote = userDao.getAllUsersDataToUpload()
+        val getNote = userRepo.getAllUsersDataToUpload()
 
         Truth.assertThat(note).isEqualTo(getNote[0])
     }
@@ -81,9 +91,9 @@ class UserDaoTest{
         // filter for expected result
         val expectedResult = users.filter {  it.syncFlag == 0 }
 
-        userDao.insertUsers(users)
+        userRepo.insertUsers(users)
 
-        val getUsers = userDao.getAllUsersDataToUpload()
+        val getUsers = userRepo.getAllUsersDataToUpload()
 
         Truth.assertThat(getUsers).isEqualTo(expectedResult)
     }

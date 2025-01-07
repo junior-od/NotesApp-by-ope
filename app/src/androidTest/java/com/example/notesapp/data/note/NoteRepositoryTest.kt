@@ -15,8 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @SmallTest
-class NoteDaoTest{
-
+class NoteRepositoryTest{
     //rule basically to allow tasks(coroutine tasks) to be run synchronously
     // and immediately on same thread, to observe and get immediate results
     @get:Rule
@@ -24,6 +23,7 @@ class NoteDaoTest{
 
     private lateinit var notesDatabase: NotesDatabase
     private lateinit var noteDao: NoteDao
+    private lateinit var noteRepo: NoteRepo
 
     @Before
     fun setUp() {
@@ -37,6 +37,7 @@ class NoteDaoTest{
         ).allowMainThreadQueries().build()
 
         noteDao = notesDatabase.noteDao()
+        noteRepo = NoteRepository(noteDao)
     }
 
     @After
@@ -55,9 +56,9 @@ class NoteDaoTest{
             syncFlag = 0
         )
 
-        noteDao.insertNote(note)
+        noteRepo.insertNote(note)
 
-        val getNote = noteDao.getAllNotesToUpload()
+        val getNote = noteRepo.getAllNotesToUpload()
 
         Truth.assertThat(note).isEqualTo(getNote[0])
     }
@@ -68,7 +69,7 @@ class NoteDaoTest{
     @Test
     fun testGetNoteById_Returns_Null() = runTest{
 
-        val getNote = noteDao.getNoteById("ids")
+        val getNote = noteRepo.getNoteById("ids")
 
         Truth.assertThat(getNote).isNull()
     }
@@ -84,9 +85,9 @@ class NoteDaoTest{
             syncFlag = 0
         )
 
-        noteDao.insertNote(note)
+        noteRepo.insertNote(note)
 
-        val getNote = noteDao.getNoteById("id")
+        val getNote = noteRepo.getNoteById("id")
 
         Truth.assertThat(getNote).isEqualTo(note)
     }
@@ -121,9 +122,11 @@ class NoteDaoTest{
         // filter for expected result
         val expectedResult = note.filter { it.createdBy.equals("user") }
 
-        noteDao.insertNotes(note)
+        note.forEach {
+            noteRepo.insertNote(it)
+        }
 
-        val getNote = noteDao.getNotesWithTodosByUserId("user", "%%").asLiveData().getOrAwaitValue()
+        val getNote = noteRepo.getNotesWithTodosByUserId("user", "%%").asLiveData().getOrAwaitValue()
 
         Truth.assertThat(getNote.size).isEqualTo(expectedResult.size)
     }
@@ -159,9 +162,11 @@ class NoteDaoTest{
         // filter for expected result
         val expectedResult = note.filter { it.createdBy.equals("user") && it.noteCategoryId.equals("1") }
 
-        noteDao.insertNotes(note)
+        note.forEach {
+            noteRepo.insertNote(it)
+        }
 
-        val getNote = noteDao.getNotesWithTodosByUserIdAndCategoryId("user", "%%", "1").asLiveData().getOrAwaitValue()
+        val getNote = noteRepo.getNotesWithTodosByUserIdAndCategoryId("user", "%%", "1").asLiveData().getOrAwaitValue()
 
         Truth.assertThat(getNote.size).isEqualTo(expectedResult.size)
     }
@@ -193,12 +198,14 @@ class NoteDaoTest{
         // filter for expected result
         val expectedResult = note.filter {  it.syncFlag == 0 }
 
-        noteDao.insertNotes(note)
+        note.forEach {
+            noteRepo.insertNote(it)
+        }
 
-        val getNote = noteDao.getAllNotesToUpload()
+
+        val getNote = noteRepo.getAllNotesToUpload()
 
         Truth.assertThat(getNote).isEqualTo(expectedResult)
     }
-
 
 }

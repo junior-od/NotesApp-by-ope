@@ -1,12 +1,14 @@
 package com.example.notesapp.data.notecategory
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.notesapp.data.db.NotesDatabase
 import com.example.notesapp.data.note.Note
 import com.example.notesapp.data.note.NoteDao
+import com.example.notesapp.getOrAwaitValue
 import com.google.common.truth.Truth
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -59,5 +61,90 @@ class NoteCategoryDaoTest{
         val getNote = noteCategoryDao.getAllNoteCategoryToUpload()
 
         Truth.assertThat(note).isEqualTo(getNote[0])
+    }
+
+
+    /**
+     * test that GetAllNoteCategoriesByUserId returns empty if user has no category created
+     * */
+    @Test
+    fun testGetAllNoteCategoriesByUserId_Returns_empty() = runTest{
+        val note = listOf(
+            NoteCategory(
+                id = "id",
+                createdBy = "user3",
+                syncFlag = 0
+            ),
+            NoteCategory(
+                id = "id4",
+                createdBy = "user3",
+                syncFlag = 0
+            )
+        )
+
+        noteCategoryDao.insertNoteCategories(note)
+
+        val getNote = noteCategoryDao.getAllNoteCategoriesByUserId("user").asLiveData().getOrAwaitValue()
+
+        Truth.assertThat(getNote).isEmpty()
+    }
+
+    /**
+     * test that GetAllNoteCategoriesByUserId returns data if user has category created
+     * */
+    @Test
+    fun testGetAllNoteCategoriesByUserId_Returns_datacreatedbyuser() = runTest{
+        val note = listOf(
+            NoteCategory(
+                id = "id",
+                createdBy = "user",
+                syncFlag = 0
+            ),
+            NoteCategory(
+                id = "id4",
+                createdBy = "user3",
+                syncFlag = 0
+            )
+        )
+
+        noteCategoryDao.insertNoteCategories(note)
+
+        val getNote = noteCategoryDao.getAllNoteCategoriesByUserId("user").asLiveData().getOrAwaitValue()
+
+        Truth.assertThat(getNote).isNotEmpty()
+    }
+
+    /**
+     * test that get all note category to upload returns
+     * data when record with sync flag 0 exists in the db
+     * */
+    @Test
+    fun testGetAllNotesToUpload_Returns_DataToUpload() = runTest{
+        val note = listOf(
+            NoteCategory(
+                id = "id",
+                createdBy = "user",
+                syncFlag = 1,
+            ),
+            NoteCategory(
+                id = "id3",
+                createdBy = "user",
+                syncFlag = 0,
+            ),
+            NoteCategory(
+                id = "id43",
+                createdBy = "user",
+                syncFlag = 1,
+            )
+        )
+
+        // filter for expected result
+        val expectedResult = note.filter {  it.syncFlag == 0 }
+
+        noteCategoryDao.insertNoteCategories(note)
+
+        val getNote = noteCategoryDao.getAllNoteCategoryToUpload()
+
+        Truth.assertThat(getNote).isEqualTo(expectedResult)
     }
 }
