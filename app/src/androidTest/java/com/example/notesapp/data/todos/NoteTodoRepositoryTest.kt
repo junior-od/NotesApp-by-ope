@@ -1,15 +1,10 @@
 package com.example.notesapp.data.todos
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.asLiveData
 import androidx.room.Room
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.notesapp.data.db.NotesDatabase
-import com.example.notesapp.data.note.NoteDao
-import com.example.notesapp.data.notecategory.NoteCategory
-import com.example.notesapp.data.notecategory.NoteCategoryDao
-import com.example.notesapp.getOrAwaitValue
 import com.google.common.truth.Truth
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -18,7 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @SmallTest
-class NoteTodoDaoTest{
+class NoteTodoRepositoryTest{
 
     //rule basically to allow tasks(coroutine tasks) to be run synchronously
     // and immediately on same thread, to observe and get immediate results
@@ -27,6 +22,7 @@ class NoteTodoDaoTest{
 
     private lateinit var notesDatabase: NotesDatabase
     private lateinit var noteTodoDao: NoteTodoDao
+    private lateinit var noteTodoRepo: NoteTodoRepo
 
     @Before
     fun setUp() {
@@ -40,6 +36,7 @@ class NoteTodoDaoTest{
         ).allowMainThreadQueries().build()
 
         noteTodoDao = notesDatabase.noteTodoDao()
+        noteTodoRepo = NoteTodoRepository(noteTodoDao)
     }
 
     @After
@@ -58,9 +55,9 @@ class NoteTodoDaoTest{
             syncFlag = 0
         )
 
-        noteTodoDao.insertNoteTodo(note)
+        noteTodoRepo.insertNoteTodo(note)
 
-        val getNote = noteTodoDao.getAllNoteTodoToUpload()
+        val getNote = noteTodoRepo.getAllNoteTodoToUpload()
 
         Truth.assertThat(note).isEqualTo(getNote[0])
     }
@@ -83,9 +80,9 @@ class NoteTodoDaoTest{
             ),
         )
 
-        noteTodoDao.insertNoteTodos(note)
+        noteTodoRepo.insertNoteTodos(note)
 
-        val getNote = noteTodoDao.getTodosByNoteId("note")
+        val getNote = noteTodoRepo.getTodosByNoteId("note")
 
         Truth.assertThat(getNote).isEmpty()
     }
@@ -108,9 +105,9 @@ class NoteTodoDaoTest{
             ),
         )
 
-        noteTodoDao.insertNoteTodos(note)
+        noteTodoRepo.insertNoteTodos(note)
 
-        val getNote = noteTodoDao.getTodosByNoteId("note")
+        val getNote = noteTodoRepo.getTodosByNoteId("note")
 
         Truth.assertThat(getNote).isNotEmpty()
     }
@@ -142,12 +139,11 @@ class NoteTodoDaoTest{
         // filter for expected result
         val expectedResult = note.filter {  it.syncFlag == 0 }
 
-        noteTodoDao.insertNoteTodos(note)
+        noteTodoRepo.insertNoteTodos(note)
 
-        val getNote = noteTodoDao.getAllNoteTodoToUpload()
+        val getNote = noteTodoRepo.getAllNoteTodoToUpload()
 
         Truth.assertThat(getNote).isEqualTo(expectedResult)
     }
-
 
 }

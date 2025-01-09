@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
+@ExperimentalCoroutinesApi
 class CoroutinesTestRule<T : CoroutineDispatcher>(
     val dispatcher: T,
 ) : TestWatcher() {
@@ -27,7 +28,7 @@ class CoroutinesTestRule<T : CoroutineDispatcher>(
         Dispatchers.setMain(dispatcher)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+
     override fun finished(description: Description?) {
         super.finished(description)
         Dispatchers.resetMain()

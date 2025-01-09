@@ -1,4 +1,4 @@
-package com.example.notesapp.data.todos
+package com.example.notesapp.data.notecategory
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.asLiveData
@@ -6,9 +6,6 @@ import androidx.room.Room
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.notesapp.data.db.NotesDatabase
-import com.example.notesapp.data.note.NoteDao
-import com.example.notesapp.data.notecategory.NoteCategory
-import com.example.notesapp.data.notecategory.NoteCategoryDao
 import com.example.notesapp.getOrAwaitValue
 import com.google.common.truth.Truth
 import kotlinx.coroutines.test.runTest
@@ -18,7 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @SmallTest
-class NoteTodoDaoTest{
+class NoteCategoryRepositoryTest{
 
     //rule basically to allow tasks(coroutine tasks) to be run synchronously
     // and immediately on same thread, to observe and get immediate results
@@ -26,7 +23,8 @@ class NoteTodoDaoTest{
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var notesDatabase: NotesDatabase
-    private lateinit var noteTodoDao: NoteTodoDao
+    private lateinit var noteCategoryDao: NoteCategoryDao
+    private lateinit var noteCategoryRepo: NoteCategoryRepo
 
     @Before
     fun setUp() {
@@ -39,7 +37,8 @@ class NoteTodoDaoTest{
             NotesDatabase::class.java
         ).allowMainThreadQueries().build()
 
-        noteTodoDao = notesDatabase.noteTodoDao()
+        noteCategoryDao = notesDatabase.noteCategoryDao()
+        noteCategoryRepo = NoteCategoryRepository(noteCategoryDao)
     }
 
     @After
@@ -48,106 +47,113 @@ class NoteTodoDaoTest{
     }
 
     /**
-     * test that a note to-do is inserted in the db
+     * test that a note category is inserted in the db
      * */
     @Test
-    fun testInsertNoteTodo_Returns_True() = runTest{
-        val note = NoteTodo(
+    fun testInsertNoteCategory_Returns_True() = runTest{
+        val note = NoteCategory(
             id = "id",
             createdBy = "user",
             syncFlag = 0
         )
 
-        noteTodoDao.insertNoteTodo(note)
+        noteCategoryRepo.insertNoteCategory(note)
 
-        val getNote = noteTodoDao.getAllNoteTodoToUpload()
+        val getNote = noteCategoryRepo.getAllNoteCategoryToUpload()
 
         Truth.assertThat(note).isEqualTo(getNote[0])
     }
 
+
     /**
-     * test that getTodosByNoteId returns empty if to-do with noteid doesn't exist in the db
+     * test that GetAllNoteCategoriesByUserId returns empty if user has no category created
      * */
     @Test
-    fun testGetTodosByNoteId_Returns_empty() = runTest{
+    fun testGetAllNoteCategoriesByUserId_Returns_empty() = runTest{
         val note = listOf(
-            NoteTodo(
+            NoteCategory(
                 id = "id",
-                noteId = "note3",
+                createdBy = "user3",
                 syncFlag = 0
             ),
-            NoteTodo(
-                id = "idewew",
-                noteId = "note4",
+            NoteCategory(
+                id = "id4",
+                createdBy = "user3",
                 syncFlag = 0
-            ),
+            )
         )
 
-        noteTodoDao.insertNoteTodos(note)
+        note.forEach {
+            noteCategoryRepo.insertNoteCategory(it)
+        }
 
-        val getNote = noteTodoDao.getTodosByNoteId("note")
+
+        val getNote = noteCategoryRepo.getAllNoteCategoriesByUserId("user").asLiveData().getOrAwaitValue()
 
         Truth.assertThat(getNote).isEmpty()
     }
 
     /**
-     * test that getTodosByNoteId returns empty if to-do with noteid does exist in the db
+     * test that GetAllNoteCategoriesByUserId returns data if user has category created
      * */
     @Test
-    fun testGetTodosByNoteId_Returns_dataWithNoteId() = runTest{
+    fun testGetAllNoteCategoriesByUserId_Returns_datacreatedbyuser() = runTest{
         val note = listOf(
-            NoteTodo(
+            NoteCategory(
                 id = "id",
-                noteId = "note",
+                createdBy = "user",
                 syncFlag = 0
             ),
-            NoteTodo(
-                id = "idwwe",
-                noteId = "note4",
+            NoteCategory(
+                id = "id4",
+                createdBy = "user3",
                 syncFlag = 0
-            ),
+            )
         )
 
-        noteTodoDao.insertNoteTodos(note)
+        note.forEach {
+            noteCategoryRepo.insertNoteCategory(it)
+        }
 
-        val getNote = noteTodoDao.getTodosByNoteId("note")
+        val getNote = noteCategoryRepo.getAllNoteCategoriesByUserId("user").asLiveData().getOrAwaitValue()
 
         Truth.assertThat(getNote).isNotEmpty()
     }
 
     /**
-     * test that get all note to-do to upload returns
+     * test that get all note category to upload returns
      * data when record with sync flag 0 exists in the db
      * */
     @Test
-    fun testGetAllNoteTodosToUpload_Returns_DataToUpload() = runTest{
+    fun testGetAllNotesToUpload_Returns_DataToUpload() = runTest{
         val note = listOf(
-            NoteTodo(
+            NoteCategory(
                 id = "id",
-                noteId = "note",
-                syncFlag = 0
+                createdBy = "user",
+                syncFlag = 1,
             ),
-            NoteTodo(
-                id = "ired",
-                noteId = "note4",
-                syncFlag = 0
+            NoteCategory(
+                id = "id3",
+                createdBy = "user",
+                syncFlag = 0,
             ),
-            NoteTodo(
-                id = "idrre",
-                noteId = "note4",
-                syncFlag = 1
-            ),
+            NoteCategory(
+                id = "id43",
+                createdBy = "user",
+                syncFlag = 1,
+            )
         )
 
         // filter for expected result
         val expectedResult = note.filter {  it.syncFlag == 0 }
 
-        noteTodoDao.insertNoteTodos(note)
+        note.forEach {
+            noteCategoryRepo.insertNoteCategory(it)
+        }
 
-        val getNote = noteTodoDao.getAllNoteTodoToUpload()
+        val getNote = noteCategoryRepo.getAllNoteCategoryToUpload()
 
         Truth.assertThat(getNote).isEqualTo(expectedResult)
     }
-
 
 }
